@@ -1,18 +1,25 @@
 #include <BURT_can.h>
 
-#define ROTATE_ID 5
+#define SIGNAL_ID 1
 
-void rotate(const CanMessage& message) { 
-  Serial.println("Rotating motor 1 by: " + message.buf[0]);
-  Serial.println("Rotating motor 2 by: " + message.buf[1]);
+void handler(const CanMessage& message) { 
+  Serial.print("Received signal with data: ");
+  for (int index = 0; index < 8; index++) {
+    Serial.print(message.buf[index]);
+    Serial.print(" ");
+  }
+  Serial.print("\n");
 }
 
 void setup() {
 	Serial.begin(9600);
 	BurtCan::setup();
-	BurtCan::registerHandler(ROTATE_ID, rotate);
+	BurtCan::registerHandler(SIGNAL_ID, handler);
+	Serial.println("Finished setup");
 }
 
 void loop() {
+	Serial.println("Checking for messages");
 	BurtCan::update();
+	delay(1000);
 }

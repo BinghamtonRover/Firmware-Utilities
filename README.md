@@ -36,21 +36,25 @@ CAN works best via callbacks instead of checking for messages. To simplify messa
 Your handler function needs to be a `CanHandler`: `const CanMessage&` as input and `void` output. `CanMessage`s have their ID in `message.id` and data in `message.buf`.
 
 ```cpp
-void rotate(const CanMessage& message) { 
-  Serial.println("Rotating motor 1 by: " + message.buf[0]);
-  Serial.println("Rotating motor 2 by: " + message.buf[1]);
+void handler(const CanMessage& message) { 
+  Serial.print("Received signal with data: ");
+  for (int index = 0; index < 8; index++) {
+    Serial.print(message.buf[index]);
+    Serial.print(" ");
+  }
+  Serial.print("\n");
 }
 ```
 
 Register your handler in `setup`: 
 
 ```cpp
-#define ROTATE_ID 5
+#define SIGNAL_ID 1
 
 void setup() {
   // ...
   BurtCan::setup();
-  BurtCan::registerHandler(ROTATE_ID, rotate);
+  BurtCan::registerHandler(SIGNAL_ID, handler);
 }
 ```
 
@@ -68,10 +72,10 @@ void loop() {
 To send a message of bytes, use `send`:
 
 ```cpp
-uint8_t[] arguments = {1, 2, 3}  // angles, in radians
+uint8_t data[] = {1, 2, 3, 4, 5, 6, 7, 8};
 
 void loop() {
-  BurtCan::send(ROTATE_ID, arguments);
+  BurtCan::send(SIGNAL_I, data);
   delay(1000);
 }
 ```
