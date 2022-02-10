@@ -4,11 +4,11 @@
 #include <FlexCAN_T4.h>
 #include <functional>
 
-#define CAN_BAUD_RATE 500'000
-#define DATA_LENGTH 64
+#define CAN_BAUD_RATE 500000
+#define DATA_LENGTH 8
 
-typedef FlexCAN_T4FD<CAN3, RX_SIZE_256, TX_SIZE_16> Can;
-typedef CANFD_message_t CanMessage;
+typedef FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16> Can;
+typedef CAN_message_t CanMessage;
 typedef void (*CanHandler)(const CanMessage& msg);
 
 class BurtCan {

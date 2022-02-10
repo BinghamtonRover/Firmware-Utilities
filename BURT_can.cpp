@@ -4,18 +4,8 @@ int BurtCan::mailbox = MB0;
 Can BurtCan::can;
 
 void BurtCan::setup() {
-	// Configure the baud rate: 
-  CANFD_timings_t config;
-  config.clock = CLK_24MHz;
-  config.baudrate = CAN_BAUD_RATE;
-  config.baudrateFD = CAN_BAUD_RATE;
-  config.propdelay = 190;
-  config.bus_length = 1;
-  config.sample = 70;
-
-  // Configure all other settings
   can.begin();
-  can.setBaudRate(config);
+  can.setBaudRate(CAN_BAUD_RATE);
   can.enableMBInterrupts();
   can.setMBFilter(REJECT_ALL);
 }
