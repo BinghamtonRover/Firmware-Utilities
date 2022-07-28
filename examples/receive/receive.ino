@@ -1,3 +1,5 @@
+#include <ArduinoSTL.h>
+
 #include <BURT_can.h>
 
 #define SIGNAL_ID 1
