@@ -1,0 +1,38 @@
+name: Document with Doxygen
+
+# Documents the BURT_can library with Doxygen.
+# Publishes the result to a separate branch, `documentation`, under 
+# `libraries/BURT_can/docs`, which can be published through GitHub Pages.
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Remove previous docs
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git branch --all
+          git switch --track origin/documentation
+          git merge origin/main
+          rm -rf libraries/BURT_can/docs
+          git stage docs
+          git commit -m "Removed documentation" -m "Will generate new docs"
+
+      - name: Run Doxygen
+        uses: mattnotmitt/doxygen-action@1.9.4
+        with:
+          working-directory: libraries/BURT_can/
+
+      - name: Commit and push files
+        run: |
+          git status
+          git stage --force .
+          git commit -a -m "Generated documentation"
+          git push
