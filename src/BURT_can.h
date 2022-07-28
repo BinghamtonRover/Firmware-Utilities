@@ -2,6 +2,8 @@
 
 #ifndef burt_can_h
 #define burt_can_h
+
+#include <Arduino.h>
 #include <FlexCAN_T4.h>
 #include <functional>
 
