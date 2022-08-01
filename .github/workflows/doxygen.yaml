@@ -29,8 +29,6 @@ jobs:
 
       - name: Run Doxygen
         uses: mattnotmitt/doxygen-action@1.9.4
-        with:
-          working-directory: libraries/BURT_can/
 
       - name: Commit and push files
         run: |
