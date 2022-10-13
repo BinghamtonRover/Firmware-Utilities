@@ -85,7 +85,8 @@ class BurtCan {
 
 		/// The counterpart of `packFloat`. 
 		///
-		///
+		/// Will return a float by reading the first `bytes` of the given buffer. 
+		/// `start` and `end` must be the same as when originally packed, to get the same value.
 		static float unpackFloat(uint8_t *buffer, int bytes, float start, float end);
 };
 
