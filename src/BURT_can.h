@@ -70,6 +70,23 @@ class BurtCan {
 		/// to a mailbox that accepts that ID. By calling this function, you create a mailbox
 		/// that is configured to handle all messages with the given ID and call the handler.
 		static void registerHandler(uint32_t id, CanHandler handler);
+
+		/// Will fill a data buffer based on a given float.
+		/// 
+		/// The buffer pointer refers to where the data packing will begin. For example, when sending with CAN,
+		/// you usually will create a uint8_t array of size 8 to represent the packet. So if you want to start packing the float `x`
+		/// at index 2 of the arr, you would use `packFloat(&arr[2],x,2,0,100)`. 
+		/// The above command would pack the float into 2 bytes (so index 2 and 3), assuming that the minimum `x` could be was 0 and the max is 100.
+		/// The min and max are important to scale the float to gain maximum precision. Note all these numbers down, as they will be used to unpack the float later.
+		///
+		/// Some important limits to know: start<=data<=end, 1<=bytes<=4
+		/// Also, it should be self-explanatory, but buffer must have at least `bytes` positions left to be filled.
+		static void packFloat(uint8_t *buffer, float data, int bytes, float start, float end);
+
+		/// The counterpart of `packFloat`. 
+		///
+		///
+		static float unpackFloat(uint8_t *buffer, int bytes, float start, float end);
 };
 
 #endif
