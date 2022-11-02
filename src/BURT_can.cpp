@@ -37,31 +37,24 @@ void BurtCan::update() {
 	can.events();
 }
 
-void BurtCan::packFloat(uint8_t *buffer, float data, int bytes, float start, float end){
-	float range = end-start;
-	uint32_t max = (1LL<<(bytes*8))-1;
-	float rel = data-start;
-	float percent = rel/range;
-	if(percent>1) percent = 1.0;
-	if(percent<0) percent = 0.0;
-	uint32_t representation = (uint32_t)(percent*max);
-
-	for(int i = 0; i<bytes; i++){
-		buffer[i] = (representation&(0xff<<(8*i)))>>(8*i);
-	}
+void BurtCan::packFloat(float num, uint8_t buffer[8], int index) { 
+	if (index > 4) return 0;  // otherwise will write out of bounds
+	// [ptr] is a pointer to an array of bytes, starting at the memory address of [num].
+  uint8_t* ptr = (uint8_t*) &num;
+  for (int i = index; i < index + 4; i++) {
+    buffer[i] = *(ptr + i);
+  }
 }
 
-float BurtCan::unpackFloat(uint8_t *buffer, int bytes, float start, float end){
-	float range = end-start;
-	uint32_t max = (1LL<<(bytes*8))-1;
+float BurtCan::unpackFloat(uint8_t buffer[8], int index) {
+	if (index > 4) return -1;  // otherwise will read out of bounds
 
-	uint32_t sink = 0;
-
-	for(int i = 0; i<bytes; i++){
-		sink+=buffer[i]<<(8*i);
-	}
-
-	float percent = ((float)sink)/max;
-	float rel = percent*range;
-	return start+rel;
+	// First, allocate a new float (defaults to 0.0)
+  float num;
+  // Next, read its floating-point representation as an array of bytes, similar to [packFloat].
+  uint8_t* ptr = (uint8_t*) &num;
+  for (int i = 0; i < 4; i++) {
+    *(ptr + i) = buffer[i];
+  }
+  return num;
 }
