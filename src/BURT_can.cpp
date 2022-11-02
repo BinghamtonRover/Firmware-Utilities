@@ -38,7 +38,7 @@ void BurtCan::update() {
 }
 
 void BurtCan::packFloat(float num, uint8_t buffer[8], int index) { 
-	if (index > 4) return 0;  // otherwise will write out of bounds
+	if (index > 4) return;  // otherwise will write out of bounds
 	// [ptr] is a pointer to an array of bytes, starting at the memory address of [num].
   uint8_t* ptr = (uint8_t*) &num;
   for (int i = index; i < index + 4; i++) {
@@ -46,7 +46,7 @@ void BurtCan::packFloat(float num, uint8_t buffer[8], int index) {
   }
 }
 
-float BurtCan::unpackFloat(uint8_t buffer[8], int index) {
+float BurtCan::unpackFloat(const uint8_t buffer[8], int index) {
 	if (index > 4) return -1;  // otherwise will read out of bounds
 
 	// First, allocate a new float (defaults to 0.0)

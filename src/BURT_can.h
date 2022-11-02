@@ -79,7 +79,7 @@ class BurtCan {
 		/// Reads 4 bytes from [buffer], starting at [index], and interprets them as an IEEE 754 floating point.
 		/// 
 		/// If [index > 4], the float cannot safely be read from the buffer, and the function will return -1.
-		static float unpackFloat(uint8_t buffer[8], int index);
+		static float unpackFloat(const uint8_t buffer[8], int index);
 };
 
 #endif

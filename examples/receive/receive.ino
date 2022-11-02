@@ -1,16 +1,15 @@
-#include <ArduinoSTL.h>
-
 #include <BURT_can.h>
 
 #define SIGNAL_ID 1
 
 void handler(const CanMessage& message) { 
-  Serial.print("Received signal with data: ");
-  for (int index = 0; index < 8; index++) {
-    Serial.print(message.buf[index]);
-    Serial.print(" ");
-  }
-  Serial.print("\n");
+  float pi = BurtCan::unpackFloat(message.buf, 0);
+  float tau = BurtCan::unpackFloat(message.buf, 4);
+
+  Serial.print("Pi: ");
+  Serial.print(pi);
+  Serial.print(", Tau: ");
+  Serial.println(tau);
 }
 
 void setup() {
