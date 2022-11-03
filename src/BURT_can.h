@@ -39,6 +39,18 @@ typedef void (*CanHandler)(const CanMessage& msg);
 /// - Use #update to check for new messages
 /// - Use #send to send some data to a given ID
 /// - Use #registerHandler to designate a function to handle messages with a given ID
+/// - Use #structToBytes to convert structured data into a CAN payload
+/// - Use #bytesToStruct to convert a CAN payload into structured data.
+/// 
+/// The structs you use must be at most 8 bytes to conform to the size of the CAN payload. 
+/// This means you'll want to choose the smallest representations for your data. For example,
+/// if you have a float for which you don't need high accuracy, you can store it as a `uint16_t`
+/// for 5 digits of precision. You may want to make that field private and introduce a public
+/// function that scales the number back into a float. 
+/// 
+/// The order of fields determines the size of the struct due to **padding**. To tell the compiler
+/// to pack your data as efficiently as possible, use `#pragma pack(push, 1)` before your struct
+/// declaration and `pragma pack(pop)` afterwards. 
 /// 
 /// See https://en.wikipedia.org/wiki/CAN_bus for more details.
 class BurtCan {
@@ -86,8 +98,8 @@ class BurtCan {
 		/// This function asserts that the struct is indeed 8 bytes long with `static_assert`. 
 		/// WARNING: DO NOT move to `.cpp`. Templates can only be declared in the header file. 
 		template <class T> 
-		static uint8_t* structToBytes(T& data) {
-			static_assert(sizeof(T) == 8, "T needs to be 8 bytes");
+		static inline uint8_t* structToBytes(T& data) {
+			static_assert(sizeof(T) <= 8, "T cannot exceed 8 bytes");
 			// Simply assert that the struct is actually a byte array.
 			return (uint8_t*) &data;
 		}
@@ -107,8 +119,8 @@ class BurtCan {
 		/// This function asserts that the struct is indeed 8 bytes long with `static_assert`. 
 		/// WARNING: DO NOT move to `.cpp`. Templates can only be declared in the header file. 
 		template <class T> 
-		static T bytesToStruct(const uint8_t buffer[8]) {
-			static_assert(sizeof(T) == 8, "T needs to be 8 bytes");
+		static inline T bytesToStruct(const uint8_t buffer[8]) {
+			static_assert(sizeof(T) <= 8, "T cannot exceed 8 bytes");
 			// Inner *: Treat buffer as a T*
 			// Outer *: Dereference the T at that address
 			return *( (T*) buffer );
