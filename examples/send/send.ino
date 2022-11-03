@@ -3,8 +3,7 @@
 
 #define SIGNAL_ID 1
 
-Data payload(PI, TEMPERATURE, 3, true);
-uint8_t* data = BurtCan::structToBytes<Data>(payload);
+Data data(PI, TEMPERATURE, 3, true);
 
 void setup() {
 	Serial.begin(9600);

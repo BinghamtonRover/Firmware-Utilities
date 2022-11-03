@@ -37,9 +37,8 @@ typedef void (*CanHandler)(const CanMessage& msg);
 /// Usage: 
 /// - Use #setup to initialize the CAN service
 /// - Use #update to check for new messages
-/// - Use #send to send some data to a given ID
+/// - Use #send to send a struct to a given ID
 /// - Use #registerHandler to designate a function to handle messages with a given ID
-/// - Use #structToBytes to convert structured data into a CAN payload
 /// - Use #bytesToStruct to convert a CAN payload into structured data.
 /// 
 /// The structs you use must be at most 8 bytes to conform to the size of the CAN payload. 
@@ -74,7 +73,16 @@ class BurtCan {
 		/// 
 		/// The ID determines the purpose of the message and who will receive it. The data 
 		/// buffer is restricted to #DATA_LENGTH.
-		static void send(uint32_t id, uint8_t data[DATA_LENGTH]);
+		template <class T>
+		static void send(uint32_t id, T data) {
+			CanMessage message;
+			message.id = id;
+			uint8_t* bytes = structToBytes<T>(data);
+			for (int index = 0; index < DATA_LENGTH; index++) {
+				message.buf[index] = bytes[index];
+			}
+			can.write(message);
+		}
 
 		/// Registers a handler function for the given ID.
 		/// 
