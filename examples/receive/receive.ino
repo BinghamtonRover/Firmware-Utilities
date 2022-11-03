@@ -1,15 +1,19 @@
 #include <BURT_can.h>
+#include "data.h"  // the same data defined in "send.ino"
 
 #define SIGNAL_ID 1
 
 void handler(const CanMessage& message) { 
-  float pi = BurtCan::unpackFloat(message.buf, 0);
-  float tau = BurtCan::unpackFloat(message.buf, 4);
+	Data data = BurtCan::bytesToStruct<Data>(message.buf);
 
-  Serial.print("Pi: ");
-  Serial.print(pi);
-  Serial.print(", Tau: ");
-  Serial.println(tau);
+  Serial.print("Angle: ");
+  Serial.print(data.angle);
+  Serial.print(", Temperature: ");
+  Serial.print(data.getTemperature());
+  Serial.print("Current Motor: ");
+  Serial.print(data.currentMotor);
+  Serial.print("Flag: ");
+  Serial.println(data.flag);
 }
 
 void setup() {

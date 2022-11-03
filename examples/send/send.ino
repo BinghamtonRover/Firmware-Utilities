@@ -1,14 +1,14 @@
 #include <BURT_can.h>
+#include "data.h"  // the same data defined in "receive.ino"
 
 #define SIGNAL_ID 1
 
-uint8_t data[8];
+Data payload(PI, TEMPERATURE, 3, true);
+uint8_t* data = BurtCan::structToBytes<Data>(payload);
 
 void setup() {
 	Serial.begin(9600);
 	BurtCan::setup();
-	BurtCan::packFloat(PI, data, 0);
-	BurtCan::packFloat(2*PI, data, 4);
 	Serial.println("Finished setup");
 }
 
