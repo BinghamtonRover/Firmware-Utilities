@@ -1,16 +1,19 @@
-#include <ArduinoSTL.h>
-
 #include <BURT_can.h>
+#include "data.h"  // the same data defined in "send.ino"
 
 #define SIGNAL_ID 1
 
 void handler(const CanMessage& message) { 
-  Serial.print("Received signal with data: ");
-  for (int index = 0; index < 8; index++) {
-    Serial.print(message.buf[index]);
-    Serial.print(" ");
-  }
-  Serial.print("\n");
+	Data data = BurtCan::bytesToStruct<Data>(message.buf);
+
+  Serial.print("Angle: ");
+  Serial.print(data.angle);
+  Serial.print(", Temperature: ");
+  Serial.print(data.getTemperature());
+  Serial.print("Current Motor: ");
+  Serial.print(data.currentMotor);
+  Serial.print("Flag: ");
+  Serial.println(data.flag);
 }
 
 void setup() {

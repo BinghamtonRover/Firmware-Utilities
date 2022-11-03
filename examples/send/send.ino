@@ -1,8 +1,9 @@
 #include <BURT_can.h>
+#include "data.h"  // the same data defined in "receive.ino"
 
 #define SIGNAL_ID 1
 
-uint8_t data[] = {1, 2, 3, 4, 5, 6, 7, 8};
+Data data(PI, TEMPERATURE, 3, true);
 
 void setup() {
 	Serial.begin(9600);
