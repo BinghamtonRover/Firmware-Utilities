@@ -71,8 +71,10 @@ class BurtCan {
 
 		/// Sends a message via the CAN bus protocol.
 		/// 
-		/// The ID determines the purpose of the message and who will receive it. The data 
-		/// buffer is restricted to #DATA_LENGTH.
+		/// The ID determines the purpose of the message and who will receive it. See #structToBytes
+		/// for details on how the struct instance is converted to a byte array. 
+		/// 
+		/// WARNING: DO NOT move to `.cpp`. Templates can only be declared in the header file. 
 		template <class T>
 		static void send(uint32_t id, T data) {
 			CanMessage message;
