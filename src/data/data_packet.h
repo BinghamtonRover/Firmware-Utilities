@@ -117,17 +117,3 @@ struct GripperPacket3 {
     unsigned short filler = 0;
     GripperPacket3(float rotateTemp, float pinchTemp, float liftTemp) : rotateTemp(0), pinchTemp(0), liftTemp(0){}
 };
-
-
-struct GripperPacket1 {
-    unsigned short rotateAngle;
-    unsigned short rotateTarget;
-    unsigned short pinchAngle;
-    unsigned short pinchTarget;
-};
-struct GripperPacket2 {
-    unsigned short liftAngle;
-    unsigned short liftTarget;
-    unsigned int flags;
-};
-
