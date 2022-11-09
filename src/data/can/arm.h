@@ -42,12 +42,12 @@ struct ArmPacket2 {
     float getLiftTarget(){
         return (float) liftTarget/10000;
     }
-    bool getSwivelActivated(){return flags&0b1>0;}
-    bool getSwivelLimSwitch(){return flags&0b01>0;}
-    bool getExtendActivated(){return flags&0b001>0;}
-    bool getExtendLimSwitch(){return flags&0b0001>0;}
-    bool getLiftActivated(){return flags&0b00001>0;}
-    bool getLiftLimSwitch(){return flags&0b000001>0;}
+    bool getSwivelActivated(){return (flags&0b1)>0;}
+    bool getSwivelLimSwitch(){return (flags&0b01)>0;}
+    bool getExtendActivated(){return (flags&0b001)>0;}
+    bool getExtendLimSwitch(){return (flags&0b0001)>0;}
+    bool getLiftActivated(){return (flags&0b00001)>0;}
+    bool getLiftLimSwitch(){return (flags&0b000001)>0;}
 };
 struct ArmPacket3 {
     unsigned short swivelTemp;

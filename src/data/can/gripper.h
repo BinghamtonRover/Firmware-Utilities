@@ -42,12 +42,12 @@ struct GripperPacket2 {
     float getLiftTarget(){
         return (float) liftTarget/10000;
     }
-    bool getRotateActivated(){return flags&0b1>0;}
-    bool getRotateLimSwitch(){return flags&0b01>0;}
-    bool getPinchActivated(){return flags&0b001>0;}
-    bool getPinchLimSwitch(){return flags&0b0001>0;}
-    bool getLiftActivated(){return flags&0b00001>0;}
-    bool getLiftLimSwitch(){return flags&0b000001>0;}
+    bool getRotateActivated(){return (flags&0b1)>0;}
+    bool getRotateLimSwitch(){return (flags&0b01)>0;}
+    bool getPinchActivated(){return (flags&0b001)>0;}
+    bool getPinchLimSwitch(){return (flags&0b0001)>0;}
+    bool getLiftActivated(){return (flags&0b00001)>0;}
+    bool getLiftLimSwitch(){return (flags&0b000001)>0;}
 };
 struct GripperPacket3 {
     unsigned short rotateTemp;
