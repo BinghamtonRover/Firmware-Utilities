@@ -25,7 +25,7 @@ struct GripperPacket1 {
 struct GripperPacket2 {
     unsigned short liftAngle;
     unsigned short liftTarget;
-    unsigned int flags;
+    unsigned int flags : 6;
     GripperPacket2(float liftAngle, float liftTarget, bool rotateActivated, bool rotateLimSwitch, bool pinchActivated, bool pinchLimSwitch, bool liftActivated, bool liftLimSwitch ) : 
         liftAngle((unsigned short) (liftAngle*10000)),
         liftTarget((unsigned short) (liftTarget*10000)), flags(0) {

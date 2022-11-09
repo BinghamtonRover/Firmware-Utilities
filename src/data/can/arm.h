@@ -25,7 +25,7 @@ struct ArmPacket1 {
 struct ArmPacket2 {
     unsigned short liftAngle;
     unsigned short liftTarget;
-    unsigned int flags;
+    unsigned int flags : 6;
     ArmPacket2(float liftAngle, float liftTarget, bool swivelActivated, bool swivelLimSwitch, bool extendActivated, bool extendLimSwitch, bool liftActivated, bool liftLimSwitch ) : 
         liftAngle((unsigned short) (liftAngle*10000)),
         liftTarget((unsigned short) (liftTarget*10000)), flags(0) {
