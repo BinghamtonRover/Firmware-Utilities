@@ -26,9 +26,12 @@ struct GripperPacket2 {
     unsigned short liftAngle;
     unsigned short liftTarget;
     unsigned int flags : 6;
-    GripperPacket2(float liftAngle, float liftTarget, bool rotateActivated, bool rotateLimSwitch, bool pinchActivated, bool pinchLimSwitch, bool liftActivated, bool liftLimSwitch ) : 
+    unsigned char rotateTemp;
+    unsigned char pinchTemp;
+    unsigned char liftTemp;
+    GripperPacket2(float liftAngle, float liftTarget, bool rotateActivated, bool rotateLimSwitch, bool pinchActivated, bool pinchLimSwitch, bool liftActivated, bool liftLimSwitch, unsigned char rotateTemp, unsigned char pinchTemp, unsigned char liftTemp ) : 
         liftAngle((unsigned short) (liftAngle*10000)),
-        liftTarget((unsigned short) (liftTarget*10000)), flags(0) {
+        liftTarget((unsigned short) (liftTarget*10000)), flags(0), rotateTemp(rotateTemp), pinchTemp(pinchTemp), liftTemp(liftTemp) {
             if(rotateActivated) flags|=0b1;
             if(rotateLimSwitch) flags|=0b01;
             if(pinchActivated) flags|=0b001;
@@ -48,11 +51,7 @@ struct GripperPacket2 {
     bool getPinchLimSwitch(){return (flags&0b0001)>0;}
     bool getLiftActivated(){return (flags&0b00001)>0;}
     bool getLiftLimSwitch(){return (flags&0b000001)>0;}
-};
-struct GripperPacket3 {
-    unsigned short rotateTemp;
-    unsigned short pinchTemp;
-    unsigned short liftTemp;
-    unsigned short filler = 0;
-    GripperPacket3(float rotateTemp, float pinchTemp, float liftTemp) : rotateTemp(0), pinchTemp(0), liftTemp(0){}
+    unsigned char getRotateTemp(){return rotateTemp;}
+    unsigned char getPinchTemp(){return pinchTemp;}
+    unsigned char getLiftTemp(){return liftTemp;}
 };
