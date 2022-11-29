@@ -83,10 +83,10 @@ struct GripperPacket2 {
         /// @param liftTemp The current temperature of the lift motor in Celsius (0-255 range)
         GripperPacket2(float liftAngle, float liftTarget, bool rotateActivated, bool rotateLimSwitch, bool pinchActivated, bool pinchLimSwitch, bool liftActivated, bool liftLimSwitch, unsigned char rotateTemp, unsigned char pinchTemp, unsigned char liftTemp ) : 
             liftAngle((unsigned short) (liftAngle*10000)),
-            liftTarget((unsigned short) (liftTarget*10000)), rotateTemp(rotateTemp), pinchTemp(pinchTemp), liftTemp(liftTemp),
+            liftTarget((unsigned short) (liftTarget*10000)), 
             rotateActivated(rotateActivated),rotateLimSwitch(rotateLimSwitch),pinchActivated(pinchActivated),
-            pinchLimSwitch(pinchLimSwitch),liftActivated(liftActivated),liftLimSwitch(liftLimSwitch)
-             {}
+            pinchLimSwitch(pinchLimSwitch),liftActivated(liftActivated),liftLimSwitch(liftLimSwitch), 
+            rotateTemp(rotateTemp), pinchTemp(pinchTemp), liftTemp(liftTemp){}
         /// @brief Get the lift current angle.
         /// @return The angle in radians.
         float getLiftAngle(){
