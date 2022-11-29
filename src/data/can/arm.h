@@ -83,10 +83,10 @@ struct ArmPacket2 {
         /// @param liftTemp The current temperature of the lift motor in Celsius (0-255 range)
         ArmPacket2(float liftAngle, float liftTarget, bool swivelActivated, bool swivelLimSwitch, bool extendActivated, bool extendLimSwitch, bool liftActivated, bool liftLimSwitch, unsigned char swivelTemp, unsigned char extendTemp, unsigned char liftTemp ) : 
             liftAngle((unsigned short) (liftAngle*10000)),
-            liftTarget((unsigned short) (liftTarget*10000)), swivelTemp(swivelTemp), extendTemp(extendTemp), liftTemp(liftTemp),
+            liftTarget((unsigned short) (liftTarget*10000)), 
             swivelActivated(swivelActivated),swivelLimSwitch(swivelLimSwitch),extendActivated(extendActivated),
-            extendLimSwitch(extendLimSwitch),liftActivated(liftActivated),liftLimSwitch(liftLimSwitch)
-             {}
+            extendLimSwitch(extendLimSwitch),liftActivated(liftActivated),liftLimSwitch(liftLimSwitch),
+            swivelTemp(swivelTemp), extendTemp(extendTemp), liftTemp(liftTemp){}
         /// @brief Get the lift current angle.
         /// @return The angle in radians.
         float getLiftAngle(){
