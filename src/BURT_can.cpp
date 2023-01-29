@@ -19,6 +19,22 @@ void BurtCan::registerHandler(uint32_t id, const CanHandler handler) {
 	mailbox += 1;
 }
 
+void BurtCan::sendRaw(uint32_t id, uint8_t data[8]) {
+	CanMessage frame;
+	frame.id = id;
+	memcpy(frame.buf, data, 8);
+	can.write(frame);
+}
+
+bool BurtCan::send(uint32_t id, const pb_msgdesc_t* fields, const void* message) {
+	uint8_t data[8];
+	bool status = BurtProto::encode(data, fields, message);
+	if (!status) return false;
+
+	sendRaw(id, data);
+	return true;
+}
+
 void BurtCan::update() { 
 	can.events();
 }
