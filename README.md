@@ -1,73 +1,38 @@
-# Burt CAN Bus
+# Firmware Utilities
 
-Provides common CAN bus functionality for the Teensy controllers aboard the rover using the [FlexCAN_T4](https://github.com/tonton81/FlexCAN_T4) library. Make sure to install that before using it
+This repository contains all the common code you'll need to write firmware sketches for the rover. 
 
-## Usage
+- **Protobuf**: All the rover's data and commands are serialized using Google's [Protocol Buffers](https://protobuf.dev/)
+- **CAN bus**: The Teensy boards communicate with the Raspberry Pi using the [CAN bus protocol](https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial)
+- **Serial**: While the firmware are supposed to be controlled by the Raspberry Pi, they can also be unit tested with the dashboard by passing Protobuf messages over a USB Serial connection.
 
-First, include the library in your code: 
+Each library is documented, required dependencies are bundled for your convenience, and there is a full example combining everything you'll need in the [Firmware-Template](https://github.com/BinghamtonRover/Firmware-Template) repository.
 
-```cpp
-#include <BURT_can.h>
+To install and use this library, run `sync.sh` (or `sync.bat` on Windows) with the path of your Arduino Sketchbook directory. You can find this by going into `File > Preferences` in your Arduino IDE. That script will create a [hard link](https://stackoverflow.com/q/185899/9392211) to this repository in your Arduino installation's [libraries](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#manual-installation) directory. 
+
+## Protobuf 
+
+Just as JSON can turn a C++ struct or a Python class into a language-agnostic string that can be passed between programs, Protobuf also encodes and decodes data between languages. The advantages of Protobuf over JSON are: 
+
+1. A much smaller format. Protobuf only encodes the fields it needs, whereas JSON encodes every field. Also, Protobuf is not designed to be human-readable, which means it doesn't have to waste space on characters like `{`, `"`, or `,`.
+2. Protobuf data is defined in a special `.proto` file, and the Protobuf compiler, `protoc`, automatically generates classes or structs in the language of your choice, with encoding/decoding methods for you. 
+3. Because code is generated for you, you never have to worry about keeping your data in sync between languages, or whether your encoding/decoding logic is sound. 
+
+The original Protobuf compiler is not fit for use within Arduino. Instead, we will use a different compiler called `nanopb`.
+
+```bash
+# Make sure you have Python before running this command
+python -m pip install nanopb
 ```
 
-Next, you need to initialize the library: 
+All our Protobuf files are stored within the [Protobuf](https://github.com/BinghamtonRover/Protobuf) repository.
 
-```cpp
-void setup() {
-  // ...
-  BurtCan::setup();
-}
-```
+## CAN Bus
 
-See the sketches in the `examples` directory for examples.
+Protobuf defines a format for how to represent our data, but we still need a method of sending that data. The dashboard uses a UDP connection over Ethernet, but the Teensy boards are too small for that. Instead, we use the widely-popular Controller Area Network (CAN), specifically designed for use within vehicles. The basic idea of a CAN bus is that all devices are connected to the same network (along the “bus”), and each message is packaged with an ID that specifies the intended recipient and purpose. 
 
-### Receiving messages
+The link above is very user-friendly; a more technical document can be found [here](https://www.ti.com/lit/an/sloa101b/sloa101b.pdf). Unfortunately, CAN only allows 8 bytes per packet, which is too small to accommodate most useful Protobuf messages. We are hoping to switch to [CANFD](https://www.csselectronics.com/pages/can-fd-flexible-data-rate-intro), which allows up to 64 bytes per packet, which is more than enough to fit all our Protobuf messages.
 
-CAN works best via callbacks instead of checking for messages. To simplify message handling, CAN uses “mailboxes” that each pick up messages with a certain ID. The ID, in our case, is a combination of the device being targeted and the command it is being sent. Thus, whenever a CAN message is received, exactly one handler should run to execute the command.
+## Serial
 
-Your handler function needs to be a `CanHandler`: `const CanMessage&` as input and `void` output. `CanMessage`s have their ID in `message.id` and data in `message.buf`.
-
-```cpp
-void handler(const CanMessage& message) { 
-  Serial.print("Received signal with data: ");
-  for (int index = 0; index < 8; index++) {
-    Serial.print(message.buf[index]);
-    Serial.print(" ");
-  }
-  Serial.print("\n");
-}
-```
-
-Register your handler in `setup`: 
-
-```cpp
-#define SIGNAL_ID 1
-
-void setup() {
-  // ...
-  BurtCan::setup();
-  BurtCan::registerHandler(SIGNAL_ID, handler);
-}
-```
-
-Be sure to listen for incoming messages in `loop`:
-
-```cpp
-void loop() {
-  // ...
-  BurtCan::update();
-}
-```
-
-### Sending messages
-
-To send a message of bytes, use `send`:
-
-```cpp
-uint8_t data[] = {1, 2, 3, 4, 5, 6, 7, 8};
-
-void loop() {
-  BurtCan::send(SIGNAL_ID, data);
-  delay(1000);
-}
-```
+Writing custom C++ code to test each aspect of the firmware can get tiresome, and it may difficult for non-software members to set up our libraries, repositories, and submodules. Instead, we’ll use the Dashboard to send commands to the Teensy boards directly over Serial. The `BURT_serial` library allows you to handle any incoming commands by specifying a callback function to handle it. You don’t have to be connected to the Dashboard to run your code – you can still use the `BURT_can` library to receive commands as normal. But you won’t be able to use the Serial Monitor when using this library, either. 
