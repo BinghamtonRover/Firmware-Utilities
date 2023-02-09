@@ -10,12 +10,12 @@ using ProtoHandler = void (*)(const uint8_t* buffer, int length);
 class BurtProto {
 	public:
 		static int encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message);
-		static bool decodeRaw(const uint8_t* buffer, const pb_msgdesc_t* fields, void* message);
+		static bool decodeRaw(const uint8_t* buffer, int length, const pb_msgdesc_t* fields, void* message);
 
 		template<typename T>
-		static T decode(const uint8_t* buffer, const pb_msgdesc_t* fields) {
+		static T decode(const uint8_t* buffer, int length, const pb_msgdesc_t* fields) {
 			T result;
-			decodeRaw(buffer, fields, &result);
+			decodeRaw(buffer, length, fields, &result);
 			return result;
 		}
 };

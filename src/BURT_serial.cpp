@@ -6,13 +6,13 @@ void BurtSerial::parseSerial() {
 	uint8_t input[length];
 	Serial.readBytes((char*) input, length);
 
-	if (!isConnected) tryConnect(input);
+	if (!isConnected) tryConnect(input, length);
 	else handler(input, length);
 }
 
-void BurtSerial::tryConnect(uint8_t* input) {
+void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Parse as an incoming Connect request
-	Connect connect = BurtProto::decode<Connect>(input, Connect_fields);
+	Connect connect = BurtProto::decode<Connect>(input, length, Connect_fields);
 	bool isValid = connect.sender == Device::Device_DASHBOARD
 	  && connect.receiver == Device::Device_FIRMWARE;
 	if (!isValid) return;

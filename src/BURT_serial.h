@@ -10,6 +10,6 @@ class BurtSerial {
 		BurtSerial(ProtoHandler handler) : handler(handler) {}
 		void parseSerial();
 	private: 
-		void tryConnect(uint8_t* input);
+		void tryConnect(uint8_t* input, int length);
 		ProtoHandler handler;
 };

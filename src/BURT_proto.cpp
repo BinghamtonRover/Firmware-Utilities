@@ -14,7 +14,7 @@ int BurtProto::encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* m
 	return stream.bytes_written;
 }
 
-bool BurtProto::decodeRaw(const uint8_t* buffer, const pb_msgdesc_t* fields, void* message) {
-	pb_istream_t stream = pb_istream_from_buffer(buffer, sizeof(buffer));
+bool BurtProto::decodeRaw(const uint8_t* buffer, int length, const pb_msgdesc_t* fields, void* message) {
+	pb_istream_t stream = pb_istream_from_buffer(buffer, length);
 	return pb_decode(&stream, fields, message);
 }
