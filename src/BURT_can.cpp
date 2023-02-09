@@ -19,19 +19,26 @@ void BurtCan::registerHandler(uint32_t id, const CanHandler handler) {
 	mailbox += 1;
 }
 
-void BurtCan::sendRaw(uint32_t id, uint8_t data[8]) {
+void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	CanMessage frame;
 	frame.id = id;
-	memcpy(frame.buf, data, 8);
+	frame.len = length;
+	memcpy(frame.buf, data, sizeof(data));
 	can.write(frame);
 }
 
 bool BurtCan::send(uint32_t id, const pb_msgdesc_t* fields, const void* message) {
-	uint8_t data[8];
-	bool status = BurtProto::encode(data, fields, message);
-	if (!status) return false;
+	uint8_t data[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+	int length = BurtProto::encode(data, fields, message);
+	if (length == -1) {
+		Serial.println("Failed to encode message"); 
+		return false;
+	} else if (length > 8) {
+		Serial.println("Encoded message is too long");
+		return false;
+	}
 
-	sendRaw(id, data);
+	sendRaw(id, data, length);
 	return true;
 }
 

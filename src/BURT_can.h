@@ -76,9 +76,10 @@ class BurtCan {
 		/// for details on how the struct instance is converted to a byte array. 
 		/// 
 		/// WARNING: DO NOT move to `.cpp`. Templates can only be declared in the header file. 
-		static void sendRaw(uint32_t id, uint8_t data[8]);
+		static void sendRaw(uint32_t id, uint8_t data[8], int length = 8);
 
 		static bool send(uint32_t id, const pb_msgdesc_t* fields, const void* message);
+		
 		/// Registers a handler function for the given ID.
 		/// 
 		/// When a message is received, the `FlexCAN_T4` library will parse its ID and send it 

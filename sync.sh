@@ -43,7 +43,7 @@ fi
 # done
 
 # Make a link in the Arduino libraries folder that points here
-ln . $sketchbook/libraries/BURT_can
+ln . $sketchbook/libraries/BURT_utils
 
 echo "Done!"
 read -p "Press [Enter] to finish"

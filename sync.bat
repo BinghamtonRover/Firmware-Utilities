@@ -8,7 +8,7 @@ setlocal ENABLEDELAYEDEXPANSION
 
 rem Parse user's sketchbook as the first argument
 if [%1] == [] (
-	set sketchbook=%userprofile%\Documents\Arduino\libraries
+	set sketchbook=%userprofile%\Documents\Arduino
 	echo Sketchbook not provided. Using Windows default of !sketchbook!
 	echo To override this, pass your sketchbook's libraries folder as the first argument.
 ) else (
@@ -19,16 +19,16 @@ if [%1] == [] (
 rem Verify sketchbook directory exists
 if NOT exist !sketchbook! (
 	echo "Error: Cannot find sketchbook directory: !sketchbook!"
-	pause
+	pause`
 	exit /b 1
 )
 
 rem Sync all libraries to the sketchbook
 echo.
-if exist !sketchbook!\BURT_can (
+if exist !sketchbook!\libraries\BURT_utils (
 	echo Folder already exists
 ) else (
-	mklink /j !sketchbook!\BURT_can .
+	mklink /j !sketchbook!\libraries\BURT_utils .
 	if ERRORLEVEL 1 (echo Operation failed) else (echo Done)
 ) 
 
