@@ -3,8 +3,6 @@
 
 #include "core.pb.h"
 
-using ProtoHandler = void (*)(uint8_t* message);
-
 class BurtSerial {
 	public: 
 		bool isConnected = false;

@@ -5,6 +5,8 @@
 #include "nanopb/pb_encode.h"
 #include "nanopb/pb_decode.h"
 
+using ProtoHandler = void (*)(const uint8_t* buffer, int length);
+
 class BurtProto {
 	public:
 		static int encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message);

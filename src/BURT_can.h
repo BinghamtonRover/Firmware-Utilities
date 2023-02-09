@@ -57,6 +57,10 @@ class BurtCan {
 	private: 
 		static int mailbox;  ///< The number of the next available mailbox.
 		static Can can;  ///< The `FlexCAN_T4` instance.
+		static uint32_t id;  ///< The ID of the message being listened for.
+		static ProtoHandler protoHandler;  ///< The function to handle incoming messages.
+
+		static void canHandler(const CanMessage& message);  //< Handles the CAN message
 
 	public: 
 		/// Initializes settings in CAN. 
@@ -79,13 +83,13 @@ class BurtCan {
 		static void sendRaw(uint32_t id, uint8_t data[8], int length = 8);
 
 		static bool send(uint32_t id, const pb_msgdesc_t* fields, const void* message);
-		
+
 		/// Registers a handler function for the given ID.
 		/// 
 		/// When a message is received, the `FlexCAN_T4` library will parse its ID and send it 
 		/// to a mailbox that accepts that ID. By calling this function, you create a mailbox
 		/// that is configured to handle all messages with the given ID and call the handler.
-		static void registerHandler(uint32_t id, CanHandler handler);
+		static void registerHandler(uint32_t id, ProtoHandler handler);
 };
 
 #endif

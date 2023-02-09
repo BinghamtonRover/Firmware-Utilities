@@ -18,6 +18,8 @@ Just as JSON can turn a C++ struct or a Python class into a language-agnostic st
 2. Protobuf data is defined in a special `.proto` file, and the Protobuf compiler, `protoc`, automatically generates classes or structs in the language of your choice, with encoding/decoding methods for you. 
 3. Because code is generated for you, you never have to worry about keeping your data in sync between languages, or whether your encoding/decoding logic is sound. 
 
+You'll need to install Google's Protobuf compiler [here](https://github.com/protocolbuffers/protobuf/releases/latest). For C++, you only need to download the `protoc` files for your platform -- the runtime libraries are bundled here for you. Once downloaded, extract the files and put them in your PATH.
+
 The original Protobuf compiler is not fit for use within Arduino. Instead, we will use a different compiler called `nanopb`.
 
 ```bash

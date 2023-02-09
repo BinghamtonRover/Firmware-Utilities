@@ -7,9 +7,7 @@ void BurtSerial::parseSerial() {
 	Serial.readBytes((char*) input, length);
 
 	if (!isConnected) tryConnect(input);
-  // else Serial.write(input, length);
-  // else Serial.println("Hello");
-	else handler(input);
+	else handler(input, length);
 }
 
 void BurtSerial::tryConnect(uint8_t* input) {
