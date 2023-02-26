@@ -1,6 +1,6 @@
 #include "BURT_serial.h"
 
-void BurtSerial::parseSerial() {
+void BurtSerial::update() {
 	int length = Serial.available();
 	if (length == 0) return;
 	uint8_t input[length];

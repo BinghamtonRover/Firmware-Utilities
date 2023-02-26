@@ -8,7 +8,7 @@ class BurtSerial {
 		bool isConnected = false;
 
 		BurtSerial(ProtoHandler handler) : handler(handler) {}
-		void parseSerial();
+		void update();
 	private: 
 		void tryConnect(uint8_t* input, int length);
 		ProtoHandler handler;
