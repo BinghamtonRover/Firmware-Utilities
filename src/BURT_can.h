@@ -1,10 +1,9 @@
 /*! @file BURT_can.h */
 
-#ifndef burt_can_h
-#define burt_can_h
+#pragma once
 
 #include <Arduino.h>
-#include <FlexCAN_T4/FlexCAN_T4.h>
+#include "FlexCAN_T4/FlexCAN_T4.h"
 
 #include "BURT_proto.h"
 
@@ -69,5 +68,3 @@ class BurtCan {
 		/// Sends a Protobuf message via the CAN bus protocol.
 		bool send(uint32_t id, const void* message, const pb_msgdesc_t* fields);
 };
-
-#endif

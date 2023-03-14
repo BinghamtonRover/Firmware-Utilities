@@ -1,6 +1,8 @@
-#include <Arduino.h>
-#include <BURT_proto.h>
+#pragma once
 
+#include <Arduino.h>
+
+#include "BURT_proto.h"
 #include "core.pb.h"
 
 class BurtSerial {
