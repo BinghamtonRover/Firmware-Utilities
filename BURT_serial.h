@@ -9,9 +9,10 @@ class BurtSerial {
 	public: 
 		bool isConnected = false;
 
-		BurtSerial(ProtoHandler handler) : handler(handler) {}
+		BurtSerial(ProtoHandler handler, Device device) : handler(handler), device(device) {}
 		void update();
 	private: 
 		void tryConnect(uint8_t* input, int length);
 		ProtoHandler handler;
+		Device device;
 };

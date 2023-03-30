@@ -20,7 +20,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Send a Connect response
 	Connect response;
 	response.receiver = Device::Device_DASHBOARD;
-	response.sender = Device::Device_FIRMWARE;
+	response.sender = device;
 	uint8_t buffer[4];
 	int newLength = BurtProto::encode(buffer, Connect_fields, &response);
 	Serial.write(buffer, newLength);

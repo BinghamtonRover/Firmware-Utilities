@@ -16,7 +16,13 @@ typedef enum _Device {
     Device_SUBSYSTEMS = 2,
     Device_VIDEO = 3,
     Device_AUTONOMY = 4,
-    Device_FIRMWARE = 5
+    Device_ARM = 5,
+    Device_GRIPPER = 6,
+    Device_SCIENCE = 7,
+    Device_ELECTRICAL = 8,
+    Device_DRIVE = 9,
+    Device_MARS = 10,
+    Device_FIRMWARE = 11
 } Device;
 
 /* Struct definitions */
