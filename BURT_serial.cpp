@@ -21,7 +21,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	Connect response;
 	response.receiver = Device::Device_DASHBOARD;
 	response.sender = device;
-	uint8_t buffer[4];
+	uint8_t buffer[8];
 	int newLength = BurtProto::encode(buffer, Connect_fields, &response);
 	Serial.write(buffer, newLength);
   isConnected = true;
