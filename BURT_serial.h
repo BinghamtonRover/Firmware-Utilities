@@ -11,6 +11,7 @@ class BurtSerial {
 
 		BurtSerial(ProtoHandler handler, Device device) : handler(handler), device(device) {}
 		void update();
+		bool send(const pb_msgdesc_t* fields, const void* message);
 	private: 
 		void tryConnect(uint8_t* input, int length);
 		ProtoHandler handler;
