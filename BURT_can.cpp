@@ -47,10 +47,10 @@ void BurtCan::update() {
 
 void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	// Initializes a CAN frame with the given data and sends it.
-	CanMessage frame;
+	CanMessage frame = {};
 	frame.id = id;
 	frame.len = length;
-	memcpy(frame.buf, data, 8);
+	memcpy(frame.buf, data, length);
 	can.write(frame);
 }
 
