@@ -1,4 +1,5 @@
 #include "BURT_serial.h"
+#include "BURT_proto.h"
 
 void BurtSerial::update() {
 	int length = Serial.available();
@@ -26,3 +27,25 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	Serial.write(buffer, newLength);
   isConnected = true;
 }
+
+/**
+ * @brief Sends an encoded protobuf message over a serial connection.
+ *
+ * This function encodes the given message using the provided field structure. 
+ * Then, it sends the encoded message over a serial connection 
+ * if the connection has been established using the tryConnect method of BurtSerial.
+ *
+ * @param fields Pointer to an array of Protocol Buffers field descriptors for the message type.
+ * @param message Pointer to the message structure to be sent, must be a protobuf message.
+ * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
+ */
+bool BurtSerial::send(const pb_msgdesc_t* fields, const void* message) {
+    if (!isConnected) return false;
+
+    uint8_t buffer = new uint8_t[100];
+	int length = BurtProto::encode(buffer, fields, message);
+    
+	int sentLength = Serial.write(buffer, length);
+	return length == sentLength;
+}
+
