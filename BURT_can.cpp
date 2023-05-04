@@ -12,9 +12,6 @@ void _defaultHandler(const uint8_t* data, int length) {
 /// This **must** be a top-level function, as it is called by #canHandler. 
 static ProtoHandler globalHandler = _defaultHandler;
 
-/// The number of the next available mailbox.
-static int mailbox = MB0;
-
 /// A top-level function to handle incoming CAN messages. 
 /// 
 /// This function delegates to #globalHandler with the contents of the message. This **must** be a 
@@ -31,14 +28,9 @@ void BurtCan::setup() {
 	// Sets the baud rate and default message policy. 
   can.begin();
   can.setBaudRate(CAN_BAUD_RATE);
-  can.enableMBInterrupts();
-  can.setMBFilter(REJECT_ALL);
-
-  // Creates a new mailbox set to handle [id] with [handler]. 
-  FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
-  can.setMBFilter(mb, id);
-  can.onReceive(mb, canHandler);
-  mailbox += 1;
+  can.enableFIFO();
+  can.enableFIFOInterrupt();
+  can.onReceive(canHandler);
 }
 
 void BurtCan::update() { 
@@ -46,11 +38,16 @@ void BurtCan::update() {
 }
 
 void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
+	if (length > 8) {
+		Serial.println("Message is too long");
+		return;
+	}
 	// Initializes a CAN frame with the given data and sends it.
-	CanMessage frame;
+	CanMessage frame = {};
 	frame.id = id;
 	frame.len = length;
-	memcpy(frame.buf, data, 8);
+	memset(frame.buf, 0, 8);
+	memcpy(frame.buf, data, length);
 	can.write(frame);
 }
 
