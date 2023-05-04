@@ -34,7 +34,8 @@ typedef enum _RoverStatus {
     RoverStatus_DISCONNECTED = 0, /* no signal at all means disconnected */
     RoverStatus_IDLE = 1, /* Yellow button should be lit. */
     RoverStatus_MANUAL = 2, /* Must show blue LEDs. Green button should be lit. */
-    RoverStatus_AUTONOMOUS = 3 /* See [AutonomyState] for LED colors */
+    RoverStatus_AUTONOMOUS = 3, /* See [AutonomyState] for LED colors */
+    RoverStatus_POWER_OFF = 4 /* Press the red button to turn off the Pis on the rover */
 } RoverStatus;
 
 /* Struct definitions */
@@ -68,8 +69,8 @@ extern "C" {
 #define _Device_ARRAYSIZE ((Device)(Device_MARS+1))
 
 #define _RoverStatus_MIN RoverStatus_DISCONNECTED
-#define _RoverStatus_MAX RoverStatus_AUTONOMOUS
-#define _RoverStatus_ARRAYSIZE ((RoverStatus)(RoverStatus_AUTONOMOUS+1))
+#define _RoverStatus_MAX RoverStatus_POWER_OFF
+#define _RoverStatus_ARRAYSIZE ((RoverStatus)(RoverStatus_POWER_OFF+1))
 
 #define Connect_sender_ENUMTYPE Device
 #define Connect_receiver_ENUMTYPE Device
