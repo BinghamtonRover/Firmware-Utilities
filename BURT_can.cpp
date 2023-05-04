@@ -38,10 +38,15 @@ void BurtCan::update() {
 }
 
 void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
+	if (length > 8) {
+		Serial.println("Message is too long");
+		return;
+	}
 	// Initializes a CAN frame with the given data and sends it.
 	CanMessage frame = {};
 	frame.id = id;
 	frame.len = length;
+	memset(frame.buf, 0, 8);
 	memcpy(frame.buf, data, length);
 	can.write(frame);
 }
