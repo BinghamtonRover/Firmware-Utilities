@@ -15,7 +15,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Parse as an incoming Connect request
 	Connect connect = BurtProto::decode<Connect>(input, length, Connect_fields);
 	bool isValid = connect.sender == Device::Device_DASHBOARD
-	  && connect.receiver == Device::Device_FIRMWARE;
+		&& connect.receiver == Device::Device_FIRMWARE;
 	if (!isValid) return;
 
 	// Send a Connect response
@@ -25,7 +25,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	uint8_t buffer[8];
 	int newLength = BurtProto::encode(buffer, Connect_fields, &response);
 	Serial.write(buffer, newLength);
-  isConnected = true;
+	isConnected = true;
 }
 
 /**
@@ -35,17 +35,17 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * Then, it sends the encoded message over a serial connection 
  * if the connection has been established using the tryConnect method of BurtSerial.
  *
- * @param fields Pointer to an array of Protocol Buffers field descriptors for the message type.
+ * @param fields The Protobuf descriptor for this message. Use the generated MessageName_fields.
  * @param message Pointer to the message structure to be sent, must be a protobuf message.
+ * @param length The maximum length of the encoded message. Use the generated MessageName_size.
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
-bool BurtSerial::send(const pb_msgdesc_t* fields, const void* message) {
-    if (!isConnected) return false;
+bool BurtSerial::send(const pb_msgdesc_t* fields, const void* message, int length) {
+	if (!isConnected) return false;
 
-    uint8_t buffer = new uint8_t[100];
-	int length = BurtProto::encode(buffer, fields, message);
-    
-	int sentLength = Serial.write(buffer, length);
-	return length == sentLength;
+	uint8_t buffer[length];
+	int encodedLength = BurtProto::encode(buffer, fields, message);
+	
+	int sentLength = Serial.write(buffer, encodedLength);
+	return encodedLength == sentLength;
 }
-
