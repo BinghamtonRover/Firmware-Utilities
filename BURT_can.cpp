@@ -7,6 +7,9 @@ void _defaultHandler(const uint8_t* data, int length) {
 	while (true);
 }
 
+/// The number of the next available mailbox.
+static int mailbox = MB0;
+
 /// A callback to run whenever a CAN message of interest arrives.
 /// 
 /// This **must** be a top-level function, as it is called by #canHandler. 
@@ -28,9 +31,14 @@ void BurtCan::setup() {
 	// Sets the baud rate and default message policy. 
   can.begin();
   can.setBaudRate(CAN_BAUD_RATE);
-  can.enableFIFO();
-  can.enableFIFOInterrupt();
-  can.onReceive(canHandler);
+  can.enableMBInterrupts();
+  can.setMBFilter(REJECT_ALL);
+
+  // Creates a new mailbox set to handle [id] with [handler]. 
+  FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
+  can.setMBFilter(mb, id);
+  can.onReceive(mb, canHandler);
+  mailbox += 1;
 }
 
 void BurtCan::update() { 
