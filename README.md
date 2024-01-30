@@ -33,7 +33,7 @@ All our Protobuf files are stored within the [Protobuf](https://github.com/Bingh
 
 Protobuf defines a format for how to represent our data, but we still need a method of sending that data. The dashboard uses a UDP connection over Ethernet, but the Teensy boards are too small for that. Instead, we use the widely-popular Controller Area Network (CAN), specifically designed for use within vehicles. The basic idea of a CAN bus is that all devices are connected to the same network (along the “bus”), and each message is packaged with an ID that specifies the intended recipient and purpose. 
 
-The link above is very user-friendly; a more technical document can be found [here](https://www.ti.com/lit/an/sloa101b/sloa101b.pdf). Unfortunately, CAN only allows 8 bytes per packet, which is too small to accommodate most useful Protobuf messages. We are hoping to switch to [CANFD](https://www.csselectronics.com/pages/can-fd-flexible-data-rate-intro), which allows up to 64 bytes per packet, which is more than enough to fit all our Protobuf messages.
+The link above is very user-friendly; a more technical document can be found [here](https://www.ti.com/lit/an/sloa101b/sloa101b.pdf). Unfortunately, CAN only allows 8 bytes per packet, which is too small to accommodate most useful Protobuf messages. We are hoping to switch to [CAN FD](https://www.csselectronics.com/pages/can-fd-flexible-data-rate-intro), which allows up to 64 bytes per packet, which is more than enough to fit all our Protobuf messages.
 
 ## Serial
 

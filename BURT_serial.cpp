@@ -1,6 +1,12 @@
 #include "BURT_serial.h"
 #include "BURT_proto.h"
 
+BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
+	device(device),
+	onMessage(onMessage),
+	onDisconnect(onDisconnect)
+	{ }
+
 void BurtSerial::update() {
 	int length = Serial.available();
 	if (length == 0) return;
@@ -15,7 +21,7 @@ void BurtSerial::update() {
 		Serial.write(response, 4);
 		isConnected = false;
 	} else {
-		handler(input, length);
+		onMessage(input, length);
 	}
 }
 

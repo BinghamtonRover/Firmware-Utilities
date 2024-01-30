@@ -24,6 +24,7 @@ using Can3 = FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16>;
 // See https://en.wikipedia.org/wiki/CAN_bus#Data_transmission for details.
 using CanMessage = CAN_message_t;
 
+
 /// A service to send and receive messages via the CAN bus protocol.
 /// 
 /// The CAN protocol allows microcontrollers to efficiently communicate. On the rover, 
@@ -40,17 +41,28 @@ using CanMessage = CAN_message_t;
 /// - Use #send to send a message with a given ID
 /// 
 /// See https://en.wikipedia.org/wiki/CAN_bus for more details.
+template <class CanType>
 class BurtCan {
 	private: 
 		/// The underlying `FlexCAN_T4` instance.
-		Can3 can;  
+		CanType can;
 
 		/// The ID of the message this instance will respond to.
 		uint32_t id;
 
+		Device device;
+
+		ProtoHandler onMessage;
+
+		VoidCallback onDisconnect;
+
+		bool useExtendedIds;
+
+		void handleCanFrame(const CanMessage& message);
+
 	public: 
 		/// Creates a CAN handler that calls #onMessage for messages with the given ID.
-		BurtCan(uint32_t id, ProtoHandler onMessage);
+		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with #id.
 		/// 
@@ -62,9 +74,12 @@ class BurtCan {
 		/// Call this function in `loop` to check for incoming messages.
 		void update();
 
-		/// Sends a byte array via the CAN bus protocol.
-		void sendRaw(uint32_t id, uint8_t data[8], int length = 8);
+		/// Sends a byte array over the CAN bus with the given ID.
+		void sendRaw(uint32_t id, uint8_t data[8], int length);
 
-		/// Sends a Protobuf message via the CAN bus protocol.
+		/// Encodes the given message and fields then sends it using #sendRaw.
 		bool send(uint32_t id, const void* message, const pb_msgdesc_t* fields);
+
+		/// Shows debug info about this CAN bus.
+		void showDebugInfo();
 };
