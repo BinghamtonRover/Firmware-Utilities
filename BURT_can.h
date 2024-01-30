@@ -56,11 +56,13 @@ class BurtCan {
 
 		VoidCallback onDisconnect;
 
+		bool useExtendedIds;
+
 		void handleCanFrame(const CanMessage& message);
 
 	public: 
 		/// Creates a CAN handler that calls #onMessage for messages with the given ID.
-		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect);
+		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with #id.
 		/// 

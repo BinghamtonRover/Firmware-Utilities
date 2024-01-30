@@ -4,11 +4,12 @@
 static int mailbox = MB0;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
+BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds) : 
 	id(id),
 	device(device),
 	onMessage(onMessage),
-	onDisconnect(onDisconnect)
+	onDisconnect(onDisconnect),
+	useExtendedIds(useExtendedIds)
 	{ }
 
 template <class CanType>
@@ -59,6 +60,7 @@ void BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	}
 	// Initializes a CAN frame with the given data and sends it.
 	CanMessage frame = {};
+	if (useExtendedIds) frame.flags.extended = 1;
 	frame.id = id;
 	frame.len = length;
 	memset(frame.buf, 0, 8);
