@@ -6,10 +6,8 @@
 #include "nanopb/pb_decode.h"
 
 #include "core.pb.h"
+#include "types.h"
 
-using ProtoHandler = void (*)(const uint8_t* buffer, int length);
-
-using VoidCallback = void (*)();
 
 class BurtProto {
 	public:
