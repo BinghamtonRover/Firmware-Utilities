@@ -41,11 +41,11 @@ using CanMessage = CAN_message_t;
 /// - Use #send to send a message with a given ID
 /// 
 /// See https://en.wikipedia.org/wiki/CAN_bus for more details.
-// template <class CanType>
+template <class CanType>
 class BurtCan {
 	private: 
 		/// The underlying `FlexCAN_T4` instance.
-		Can3 can;  
+		CanType can;
 
 		/// The ID of the message this instance will respond to.
 		uint32_t id;

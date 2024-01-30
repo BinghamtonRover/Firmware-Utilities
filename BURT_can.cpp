@@ -3,20 +3,21 @@
 /// The number of the next available mailbox.
 static int mailbox = MB0;
 
-// template <class CanType>
-BurtCan::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
+template <class CanType>
+BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
 	id(id),
 	device(device),
 	onMessage(onMessage),
 	onDisconnect(onDisconnect)
 	{ }
 
-void BurtCan::handleCanFrame(const CanMessage& message) {
+template <class CanType>
+void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
 	onMessage(message.buf, message.len);
 }
 
-// template <class CanType>
-void BurtCan::setup() {
+template <class CanType>
+void BurtCan<CanType>::setup() {
 	// Sets the baud rate and default message policy. 
   can.begin();
   can.setBaudRate(CAN_BAUD_RATE);
@@ -29,8 +30,8 @@ void BurtCan::setup() {
   mailbox += 1;
 }
 
-// template <class CanType>
-void BurtCan::update() { 
+template <class CanType>
+void BurtCan<CanType>::update() { 
 	int count = 0;
 	while (true) {
 		CanMessage message;
@@ -50,8 +51,8 @@ void BurtCan::update() {
 	}
 }
 
-// template <class CanType>
-void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
+template <class CanType>
+void BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	if (length > 8) {
 		Serial.println("Message is too long");
 		return;
@@ -65,8 +66,8 @@ void BurtCan::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	can.write(frame);
 }
 
-// template <class CanType>
-bool BurtCan::send(uint32_t id, const void* message, const pb_msgdesc_t* fields) {
+template <class CanType>
+bool BurtCan<CanType>::send(uint32_t id, const void* message, const pb_msgdesc_t* fields) {
 	// Encodes a Protobuf message and then sends it using #sendRaw.
 	uint8_t data[8];
 	int length = BurtProto::encode(data, fields, message);
@@ -82,7 +83,16 @@ bool BurtCan::send(uint32_t id, const void* message, const pb_msgdesc_t* fields)
 	return true;
 }
 
-void BurtCan::showDebugInfo() {
+template <class CanType>
+void BurtCan<CanType>::showDebugInfo() {
 	Serial.println("[BurtCan] Debug: Showing debug info...");
 	can.mailboxStatus();
 }
+
+// ----- DO NOT REMOVE -----
+// The following tells C++ which concrete implementations of "CanType" we will need.
+// Without this, the BurtCan class will compile but you cannot use it since it's never seen
+// a "real" CanType (ie, Can1, Can2, Can3) in this file. We have to use all three CAN types here.
+template class BurtCan<Can1>; 
+template class BurtCan<Can2>; 
+template class BurtCan<Can3>; 
