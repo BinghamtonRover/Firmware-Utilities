@@ -1,20 +1,43 @@
 #include "BURT_can.h"
 
+#define SUBSYSTEMS_HEARTBEAT_ID 1
+#define MAGIC_HEARTBEAT_VALUE 42
+
 /// The number of the next available mailbox.
 static int mailbox = MB0;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds) : 
+BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
+	id(id),
+	device(device),
+	onMessage(onMessage)
+	{ config.onDisconnect = onDisconnect; }
+
+template <class CanType>
+BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, BurtCanConfig config) : 
 	id(id),
 	device(device),
 	onMessage(onMessage),
-	onDisconnect(onDisconnect),
-	useExtendedIds(useExtendedIds)
+	config(config)
 	{ }
 
 template <class CanType>
 void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
 	onMessage(message.buf, message.len);
+}
+
+template <class CanType>
+void BurtCan<CanType>::sendHeartbeat() {
+	Connect message = Connect_init_zero; 
+	message.sender = device;
+	message.receiver = Device::Device_SUBSYSTEMS;
+	send(SUBSYSTEMS_HEARTBEAT_ID, &message, Connect_fields);
+}
+
+template <class CanType>
+void BurtCan<CanType>::checkHeartbeats() {
+	if (!gotHeartbeat) return config.onDisconnect();
+	gotHeartbeat = false;  // clear flag for next check
 }
 
 template <class CanType>
@@ -29,6 +52,23 @@ void BurtCan<CanType>::setup() {
   FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
   can.setMBFilter(mb, id);
   mailbox += 1;
+
+	// Configures heartbeat timers
+	if (config.enableHeartbeats) {
+		auto sendHeartbeatLambda = [this]() { this->sendHeartbeat(); };
+		auto checkHeartbeatsLambda = [this]() { this->checkHeartbeats(); };
+		heartbeatSendTimer = BurtTimer(config.heartbeatSendInterval, sendHeartbeatLambda);
+		heartbeatCheckTimer = BurtTimer(config.heartbeatCheckInterval, checkHeartbeatsLambda);
+		heartbeatSendTimer.setup();
+		heartbeatCheckTimer.setup();
+	}
+}
+
+bool isHeartbeat(uint8_t* buffer) {
+	for (int i = 0; i < 8; i++) {
+		if (buffer[i] != MAGIC_HEARTBEAT_VALUE) return false;
+	}
+	return true;
 }
 
 template <class CanType>
@@ -45,6 +85,10 @@ void BurtCan<CanType>::update() {
 				Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
 				Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
 			}
+			if (message.len == 8 && isHeartbeat(message.buf)) {
+				gotHeartbeat = true;
+				continue;
+			}
 			onMessage(message.buf, message.len);
 		} else {
 			return;
@@ -60,7 +104,7 @@ void BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	}
 	// Initializes a CAN frame with the given data and sends it.
 	CanMessage frame = {};
-	if (useExtendedIds) frame.flags.extended = 1;
+	if (config.useExtendedIds) frame.flags.extended = 1;
 	frame.id = id;
 	frame.len = length;
 	memset(frame.buf, 0, 8);
