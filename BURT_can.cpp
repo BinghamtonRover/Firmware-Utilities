@@ -1,7 +1,8 @@
 #include "BURT_can.h"
 
-#define SUBSYSTEMS_HEARTBEAT_ID 1
+#define SUBSYSTEMS_HEARTBEAT_ID 2
 #define MAGIC_HEARTBEAT_VALUE 42
+#define HEARTBEAT_CAN_ID 1
 
 /// The number of the next available mailbox.
 static int mailbox = MB0;
@@ -51,6 +52,8 @@ void BurtCan<CanType>::setup() {
   // Creates a new mailbox set to handle [id] with [handler]. 
   FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
   can.setMBFilter(mb, id);
+	// Optionally allow heartbeats through the filter
+  if (config.enableHeartbeats) can.setMBFilter(mb, HEARTBEAT_CAN_ID);
   mailbox += 1;
 
 	// Configures heartbeat timers
@@ -85,7 +88,7 @@ void BurtCan<CanType>::update() {
 				Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
 				Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
 			}
-			if (message.len == 8 && isHeartbeat(message.buf)) {
+			if (message.id == HEARTBEAT_CAN_ID) {
 				gotHeartbeat = true;
 				continue;
 			}
