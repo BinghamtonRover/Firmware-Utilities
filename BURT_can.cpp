@@ -67,13 +67,6 @@ void BurtCan<CanType>::setup() {
 	}
 }
 
-bool isHeartbeat(uint8_t* buffer) {
-	for (int i = 0; i < 8; i++) {
-		if (buffer[i] != MAGIC_HEARTBEAT_VALUE) return false;
-	}
-	return true;
-}
-
 template <class CanType>
 void BurtCan<CanType>::update() { 
 	int count = 0;
@@ -88,8 +81,8 @@ void BurtCan<CanType>::update() {
 				Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
 				Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
 			}
-			if (message.id == HEARTBEAT_CAN_ID) {
-				gotHeartbeat = true;
+			if (config.enableHeartbeats && message.id == HEARTBEAT_CAN_ID) {
+				gotHeartbeat = true;  // clear flag for next heartbeat check
 				continue;
 			}
 			onMessage(message.buf, message.len);
