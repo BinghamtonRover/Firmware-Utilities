@@ -6,6 +6,7 @@
 #include "FlexCAN_T4/FlexCAN_T4.h"
 
 #include "BURT_proto.h"
+#include "BURT_timer.h"
 
 #define CAN_BAUD_RATE 500000
 #define DATA_LENGTH 8
@@ -24,6 +25,14 @@ using Can3 = FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16>;
 // See https://en.wikipedia.org/wiki/CAN_bus#Data_transmission for details.
 using CanMessage = CAN_message_t;
 
+typedef struct {
+	// TODO: Add support for receiving extended frames
+	bool useExtendedIds = false;
+	bool enableHeartbeats = true;
+	int heartbeatSendInterval = 100;  // ms
+	int heartbeatCheckInterval = 500;  // ms
+	VoidCallback onDisconnect;
+} BurtCanConfig;
 
 /// A service to send and receive messages via the CAN bus protocol.
 /// 
@@ -54,15 +63,20 @@ class BurtCan {
 
 		ProtoHandler onMessage;
 
-		VoidCallback onDisconnect;
+		BurtCanConfig config;
 
-		bool useExtendedIds;
+		BurtTimer heartbeatSendTimer;
+		BurtTimer heartbeatCheckTimer;
+		bool gotHeartbeat = false;
 
 		void handleCanFrame(const CanMessage& message);
+		void sendHeartbeat();
+		void checkHeartbeats();
 
 	public: 
 		/// Creates a CAN handler that calls #onMessage for messages with the given ID.
-		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds = false);
+		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect);
+		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, BurtCanConfig config);
 
 		/// Initializes the CAN hardware to handle messages with #id.
 		/// 

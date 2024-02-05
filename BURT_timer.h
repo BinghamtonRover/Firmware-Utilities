@@ -1,3 +1,4 @@
+#pragma once
 #include "types.h"
 
 class BurtTimer {
@@ -8,6 +9,7 @@ class BurtTimer {
     void reset();
 
   public: 
+    BurtTimer() { }
     BurtTimer(int interval, VoidCallback callback);
     void setup();
     void update();
