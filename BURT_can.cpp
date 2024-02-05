@@ -69,6 +69,11 @@ void BurtCan<CanType>::setup() {
 
 template <class CanType>
 void BurtCan<CanType>::update() { 
+	if (config.enableHeartbeats) {
+		heartbeatSendTimer.update();
+		heartbeatCheckTimer.update();
+	}
+	
 	int count = 0;
 	while (true) {
 		CanMessage message;
