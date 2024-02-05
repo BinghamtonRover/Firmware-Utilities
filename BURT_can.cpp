@@ -22,7 +22,6 @@ void BurtCan<CanType>::setup() {
 	// Sets the baud rate and default message policy. 
   can.begin();
   can.setBaudRate(CAN_BAUD_RATE);
-  can.enableMBInterrupts();
   can.setMBFilter(REJECT_ALL);
 
   // Creates a new mailbox set to handle [id] with [handler]. 
@@ -37,18 +36,15 @@ void BurtCan<CanType>::update() {
 	while (true) {
 		CanMessage message;
 		int success = can.read(message);  // 0=no message, 1=message read
-		if (success > 0) {
-			count++;
-			if (count == 10) {
-				Serial.println("[BurtCan] Warning: More than 10 messages are being read in loop().");
-				Serial.println("[BurtCan] Warning:   Consider calling can.update() more often, reduce the");
-				Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
-				Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
-			}
-			onMessage(message.buf, message.len);
-		} else {
-			return;
+		if (success == 0) return;
+		count++;
+		if (count == 10) {
+			Serial.println("[BurtCan] Warning: More than 10 messages are being read in loop().");
+			Serial.println("[BurtCan] Warning:   Consider calling can.update() more often, reduce the");
+			Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
+			Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
 		}
+		onMessage(message.buf, message.len);
 	}
 }
 
