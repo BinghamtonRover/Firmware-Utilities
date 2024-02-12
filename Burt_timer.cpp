@@ -1,5 +1,7 @@
 #include "BURT_timer.h"
 
+BurtTimer::BurtTimer() { }
+
 BurtTimer::BurtTimer(int interval, VoidCallback callback) : 
   interval(interval),
   callback(callback)

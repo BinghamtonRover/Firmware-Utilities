@@ -1,7 +1,13 @@
 #include "BURT_heartbeats.h"
 
+BurtHeartbeats::BurtHeartbeats(VoidCallback onDisconnect) { }
+
+BurtHeartbeats::BurtHeartbeats(VoidCallback onDisconnect, BurtHeartbeatConfig config) { }
+
 void BurtHeartbeats::setup() {
-  checkTimer = BurtTimer(config.heartbeatCheckInterval, checkForHeartbeats);
+  VoidCallback callback = [this]() { this->checkForHeartbeats(); };
+  checkTimer = BurtTimer(config.heartbeatCheckInterval, callback);
+  checkTimer.setup();
 }
 
 void BurtHeartbeats::update() {
