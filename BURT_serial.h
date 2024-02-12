@@ -8,7 +8,7 @@ class BurtSerial {
 	public: 
 		bool isConnected = false;
 
-		BurtSerial(Device device, ProtoHandler onMessage, VoidCallback onDisconnect);
+		BurtSerial(Device device, ProtoHandler onMessage);
 		void setup() { /* No setup needed */ }
 		void update();
 		bool send(const pb_msgdesc_t* fields, const void* message, int length);
@@ -17,5 +17,4 @@ class BurtSerial {
 		void tryConnect(uint8_t* input, int length);
 		Device device;
 		ProtoHandler onMessage;
-		VoidCallback onDisconnect;
 };
