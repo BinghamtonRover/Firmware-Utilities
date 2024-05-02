@@ -20,7 +20,7 @@ typedef enum _Device {
     Device_ARM = 6,
     Device_GRIPPER = 7,
     Device_SCIENCE = 8,
-    Device_CONTROL = 9
+    Device_DRIVE = 9
 } Device;
 
 /* / Changes the way the rover listens to incoming commands.
@@ -72,8 +72,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _Device_MIN Device_DEVICE_UNDEFINED
-#define _Device_MAX Device_CONTROL
-#define _Device_ARRAYSIZE ((Device)(Device_CONTROL+1))
+#define _Device_MAX Device_DRIVE
+#define _Device_ARRAYSIZE ((Device)(Device_DRIVE+1))
 
 #define _RoverStatus_MIN RoverStatus_DISCONNECTED
 #define _RoverStatus_MAX RoverStatus_RESTART

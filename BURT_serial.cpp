@@ -15,7 +15,7 @@ void BurtSerial::update() {
 
 	if (!isConnected) {
 		tryConnect(input, length);
-	} else if (receivedLength == 4 && (input[0] == 0 && input[1] == 0 && input[2] == 0 && input[3] == 0)) {
+	} else if (receivedLength >= 4 && (input[0] == 0 && input[1] == 0 && input[2] == 0 && input[3] == 0)) {
 		// This is our special "reset" code. Respond with 1111
 		uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
 		Serial.write(response, 4);
@@ -28,13 +28,12 @@ void BurtSerial::update() {
 void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Parse as an incoming Connect request
 	Connect connect = BurtProto::decode<Connect>(input, length, Connect_fields);
-	bool isValid = connect.sender == Device::Device_DASHBOARD
-		&& connect.receiver == Device::Device_FIRMWARE;
+	bool isValid = connect.receiver == Device::Device_FIRMWARE;
 	if (!isValid) return;
 
 	// Send a Connect response
 	Connect response;
-	response.receiver = Device::Device_DASHBOARD;
+	response.receiver = connect.sender;
 	response.sender = device;
 	uint8_t buffer[8];
 	int newLength = BurtProto::encode(buffer, Connect_fields, &response);
