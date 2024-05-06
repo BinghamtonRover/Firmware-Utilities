@@ -7,6 +7,14 @@ BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, VoidCallback onDis
 	onDisconnect(onDisconnect)
 	{ }
 
+bool isResetCode(uint8_t* buffer, int length) {
+	return length >= 4
+		&& buffer[0] == 0
+		&& buffer[1] == 0
+		&& buffer[2] == 0
+		&& buffer[3] == 0;
+}
+
 void BurtSerial::update() {
 	int length = Serial.available();
 	if (length == 0) return;
@@ -15,7 +23,7 @@ void BurtSerial::update() {
 
 	if (!isConnected) {
 		tryConnect(input, length);
-	} else if (receivedLength >= 4 && (input[0] == 0 && input[1] == 0 && input[2] == 0 && input[3] == 0)) {
+	} else if (isResetCode(input, receivedLength)) {
 		// This is our special "reset" code. Respond with 1111
 		uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
 		Serial.write(response, 4);
