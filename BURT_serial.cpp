@@ -54,7 +54,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
 bool BurtSerial::send(const pb_msgdesc_t* fields, const void* message, int length) {
-	/// if (!isConnected) return false;
+	if (!isConnected) return false;
 
 	uint8_t* buffer = new uint8_t[length];
 	int encodedLength = BurtProto::encode(buffer, fields, message);
