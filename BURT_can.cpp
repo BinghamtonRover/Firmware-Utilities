@@ -4,11 +4,9 @@
 static int mailbox = MB0;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds) : 
+BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds) : 
 	id(id),
-	device(device),
 	onMessage(onMessage),
-	onDisconnect(onDisconnect),
 	useExtendedIds(useExtendedIds)
 	{ }
 

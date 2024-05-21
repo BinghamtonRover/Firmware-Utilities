@@ -50,11 +50,7 @@ class BurtCan {
 		/// The ID of the message this instance will respond to.
 		uint32_t id;
 
-		Device device;
-
 		ProtoHandler onMessage;
-
-		VoidCallback onDisconnect;
 
 		bool useExtendedIds;
 
@@ -62,7 +58,7 @@ class BurtCan {
 
 	public: 
 		/// Creates a CAN handler that calls #onMessage for messages with the given ID.
-		BurtCan(uint32_t id, Device device, ProtoHandler onMessage, VoidCallback onDisconnect, bool useExtendedIds = false);
+		BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with #id.
 		/// 
