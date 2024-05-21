@@ -12,12 +12,5 @@ PB_BIND(Connect, Connect, AUTO)
 PB_BIND(Disconnect, Disconnect, AUTO)
 
 
-PB_BIND(UpdateSetting, UpdateSetting, AUTO)
-
-
-PB_BIND(ProtoColor, ProtoColor, AUTO)
-
-
-
 
 
