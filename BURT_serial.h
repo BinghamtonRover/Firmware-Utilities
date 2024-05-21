@@ -8,13 +8,15 @@ class BurtSerial {
 	public: 
 		bool isConnected = false;
 
-		BurtSerial(Device device, ProtoHandler onMessage);
+		BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length);
 		void setup() { /* No setup needed */ }
 		void update();
-		bool send(const pb_msgdesc_t* fields, const void* message, int length);
+		bool send(const void* message);
 
 	private: 
 		void tryConnect(uint8_t* input, int length);
 		Device device;
 		ProtoHandler onMessage;
+		const pb_msgdesc_t* descriptor;
+		int length;
 };

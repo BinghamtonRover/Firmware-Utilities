@@ -1,9 +1,11 @@
 #include "BURT_serial.h"
 #include "BURT_proto.h"
 
-BurtSerial::BurtSerial(Device device, ProtoHandler onMessage) : 
+BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length) :
 	device(device),
-	onMessage(onMessage)
+	onMessage(onMessage),
+	descriptor(descriptor),
+	length(length)
 	{ }
 
 bool isResetCode(uint8_t* buffer, int length) {
@@ -60,11 +62,11 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * @param length The maximum length of the encoded message. Use the generated MessageName_size.
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
-bool BurtSerial::send(const pb_msgdesc_t* fields, const void* message, int length) {
+bool BurtSerial::send(const void* message) {
 	if (!isConnected) return false;
 
 	uint8_t* buffer = new uint8_t[length];
-	int encodedLength = BurtProto::encode(buffer, fields, message);
+	int encodedLength = BurtProto::encode(buffer, descriptor, message);
 	
 	int sentLength = Serial.write(buffer, encodedLength);
 	delete[] buffer;
