@@ -1,10 +1,9 @@
 #include "BURT_serial.h"
 #include "BURT_proto.h"
 
-BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, VoidCallback onDisconnect) : 
+BurtSerial::BurtSerial(Device device, ProtoHandler onMessage) : 
 	device(device),
-	onMessage(onMessage),
-	onDisconnect(onDisconnect)
+	onMessage(onMessage)
 	{ }
 
 bool isResetCode(uint8_t* buffer, int length) {
