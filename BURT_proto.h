@@ -11,7 +11,7 @@
 
 class BurtProto {
 	public:
-		static int encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message);
+		static int encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message, int length);
 		static bool decodeRaw(const uint8_t* buffer, int length, const pb_msgdesc_t* fields, void* message);
 
 		template<typename T>

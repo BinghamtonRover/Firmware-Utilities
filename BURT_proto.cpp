@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 
-int BurtProto::encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message) {
-	pb_ostream_t stream = pb_ostream_from_buffer(buffer, 8);
+int BurtProto::encode(uint8_t* buffer, const pb_msgdesc_t* fields, const void* message, int length) {
+	pb_ostream_t stream = pb_ostream_from_buffer(buffer, length);
 	// This *should* return false on failure, but it seems to return false positives
 	pb_encode(&stream, fields, message);
 	return stream.bytes_written;

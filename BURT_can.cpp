@@ -66,7 +66,7 @@ template <class CanType>
 bool BurtCan<CanType>::send(uint32_t id, const void* message, const pb_msgdesc_t* fields) {
 	// Encodes a Protobuf message and then sends it using #sendRaw.
 	uint8_t data[8];
-	int length = BurtProto::encode(data, fields, message);
+	int length = BurtProto::encode(data, fields, message, 8);
 	if (length == -1) {
 		Serial.println("[BurtCan] Error: Failed to encode message"); 
 		return false;

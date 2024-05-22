@@ -45,7 +45,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	response.receiver = connect.sender;
 	response.sender = device;
 	uint8_t buffer[8];
-	int newLength = BurtProto::encode(buffer, Connect_fields, &response);
+	int newLength = BurtProto::encode(buffer, Connect_fields, &response, Connect_size);
 	Serial.write(buffer, newLength);
 	isConnected = true;
 }
@@ -66,7 +66,7 @@ bool BurtSerial::send(const void* message) {
 	if (!isConnected) return false;
 
 	uint8_t* buffer = new uint8_t[length];
-	int encodedLength = BurtProto::encode(buffer, descriptor, message);
+	int encodedLength = BurtProto::encode(buffer, descriptor, message, length);
 	
 	int sentLength = Serial.write(buffer, encodedLength);
 	delete[] buffer;
