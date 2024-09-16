@@ -1,12 +1,17 @@
 #include "BURT_serial.h"
 #include "BURT_proto.h"
 
-BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length) :
+BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, 
+int length, VoidCallback onDisconnect) :
 	device(device),
 	onMessage(onMessage),
 	descriptor(descriptor),
-	length(length)
-	{ }
+	length(length),
+	onDisconnect(onDisconnect)
+{ 
+	heartbeatTimer = BurtTimer(HEARTBEAT_INTERVAL, heartbeatCheck);
+	heartbeatTimer.setup();
+}
 
 bool isResetCode(uint8_t* buffer, int length) {
 	return length >= 4
@@ -31,6 +36,19 @@ void BurtSerial::update() {
 		isConnected = false;
 	} else {
 		onMessage(input, length);
+	}
+
+	heartbeatTimer.update();
+}
+
+/*
+- Right now we are checking if we are connected using isConnected variable,
+and since this variable is never updated after it is true this implementation
+will not work, we need to send actual heartbeats
+*/
+void BurtSerial::heartbeatCheck(){
+	if(!isConnected){
+		onDisconnect();
 	}
 }
 
