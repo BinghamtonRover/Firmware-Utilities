@@ -5,7 +5,7 @@
 #include "BURT_proto.h"
 #include "BURT_timer.h"
 
-const int HEARTBEAT_INTERVAL = 100;
+const int heartbeatInterval = 100;
 
 class BurtSerial {
 	public: 
@@ -13,7 +13,7 @@ class BurtSerial {
 
 		BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, 
 		int length, VoidCallback onDisconnect);
-		void setup() { /* No setup needed */ };
+		void setup();
 		void update();
 		bool send(const void* message);
 
@@ -25,7 +25,8 @@ class BurtSerial {
 		int length;
 		
 		// Heartbeat Functionality
+		bool receivedHeartbeat = false;
 		void heartbeatCheck();
-		BurtTimer heartbeatTimer;
 		VoidCallback onDisconnect;
+		BurtTimer heartbeatTimer;
 };

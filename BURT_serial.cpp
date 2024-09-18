@@ -8,8 +8,12 @@ int length, VoidCallback onDisconnect) :
 	descriptor(descriptor),
 	length(length),
 	onDisconnect(onDisconnect)
-{ 
-	heartbeatTimer = BurtTimer(HEARTBEAT_INTERVAL, heartbeatCheck);
+{
+	VoidCallback callback = [this]() { this->heartbeatCheck(); };
+	heartbeatTimer = BurtTimer(heartbeatInterval, callback);
+}
+
+void BurtSerial::setup(){
 	heartbeatTimer.setup();
 }
 
@@ -21,9 +25,18 @@ bool isResetCode(uint8_t* buffer, int length) {
 		&& buffer[3] == 0;
 }
 
+bool isHeartbeat(uint8_t* buffer, int length) {
+	return length >= 4
+		&& buffer[0] == 1
+		&& buffer[1] == 1
+		&& buffer[2] == 1
+		&& buffer[3] == 1;
+}
+
 void BurtSerial::update() {
 	int length = Serial.available();
 	if (length == 0) return;
+	digitalWrite(13, HIGH);
 	uint8_t input[length];
 	int receivedLength = Serial.readBytes((char*) input, length);
 
@@ -34,20 +47,27 @@ void BurtSerial::update() {
 		uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
 		Serial.write(response, 4);
 		isConnected = false;
-	} else {
+	
+	} else if (isHeartbeat(input, receivedLength)) {
+		// Check if it is a heartbeat message
+		receivedHeartbeat = true;
+		uint8_t response[4] = {0x0, 0x0, 0x0, 0x0};
+		Serial.write(response, 4);
+	} 
+	else {
 		onMessage(input, length);
 	}
 
 	heartbeatTimer.update();
 }
 
-/*
-- Right now we are checking if we are connected using isConnected variable,
-and since this variable is never updated after it is true this implementation
-will not work, we need to send actual heartbeats
-*/
+// Check if heartbeat received in time
 void BurtSerial::heartbeatCheck(){
-	if(!isConnected){
+	if(receivedHeartbeat){
+		receivedHeartbeat = false;
+	}
+	else if(isConnected){
+		isConnected = false;
 		onDisconnect();
 	}
 }
