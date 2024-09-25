@@ -5,7 +5,7 @@
 #include "BURT_proto.h"
 #include "BURT_timer.h"
 
-const int heartbeatInterval = 100;
+const int heartbeatInterval = 500;
 
 class BurtSerial {
 	public: 

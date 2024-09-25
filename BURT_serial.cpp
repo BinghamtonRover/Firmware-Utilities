@@ -34,6 +34,8 @@ bool isHeartbeat(uint8_t* buffer, int length) {
 }
 
 void BurtSerial::update() {
+	heartbeatTimer.update();
+
 	int length = Serial.available();
 	if (length == 0) return;
 	uint8_t input[length];
@@ -56,8 +58,6 @@ void BurtSerial::update() {
 	else {
 		onMessage(input, length);
 	}
-
-	heartbeatTimer.update();
 }
 
 // Check if heartbeat received in time
