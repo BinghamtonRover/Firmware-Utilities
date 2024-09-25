@@ -36,7 +36,6 @@ bool isHeartbeat(uint8_t* buffer, int length) {
 void BurtSerial::update() {
 	int length = Serial.available();
 	if (length == 0) return;
-	digitalWrite(13, HIGH);
 	uint8_t input[length];
 	int receivedLength = Serial.readBytes((char*) input, length);
 
@@ -86,6 +85,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	int newLength = BurtProto::encode(buffer, Connect_fields, &response, Connect_size);
 	Serial.write(buffer, newLength);
 	isConnected = true;
+	receivedHeartbeat = true;
 }
 
 /**
