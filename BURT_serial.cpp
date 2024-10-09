@@ -75,7 +75,7 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Parse as an incoming Connect request
 	Connect connect = BurtProto::decode<Connect>(input, length, Connect_fields);
 	bool isValid = connect.receiver == Device::Device_FIRMWARE;
-	if (!isValid) return;
+	// if (!isValid) return;
 
 	// Send a Connect response
 	Connect response;
