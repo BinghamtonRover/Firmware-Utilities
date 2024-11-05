@@ -1,7 +1,7 @@
 #include "BURT_can.h"
 
 /// The number of the next available mailbox.
-static int mailbox = MB0;
+static int mailbox = MB4;
 
 template <class CanType>
 BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds) : 
