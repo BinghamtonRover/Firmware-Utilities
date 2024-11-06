@@ -34,6 +34,7 @@ void BurtSerial::update() {
 	}
 }
 
+// CHANGE THIS
 void BurtSerial::tryConnect(uint8_t* input, int length) {
 	// Parse as an incoming Connect request
 	Connect connect = BurtProto::decode<Connect>(input, length, Connect_fields);
