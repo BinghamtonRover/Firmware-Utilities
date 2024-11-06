@@ -47,8 +47,9 @@ class BurtCan {
 		/// The underlying `FlexCAN_T4` instance.
 		CanType can;
 
-		/// The ID of the message this instance will respond to.
-		uint32_t id;
+		uint32_t idStart;
+
+		uint32_t idEnd;
 
 		ProtoHandler onMessage;
 
@@ -59,6 +60,7 @@ class BurtCan {
 	public: 
 		/// Creates a CAN handler that calls #onMessage for messages with the given ID.
 		BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds = false);
+		BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessage, bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with #id.
 		/// 

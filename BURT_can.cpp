@@ -1,11 +1,23 @@
 #include "BURT_can.h"
 
 /// The number of the next available mailbox.
-static int mailbox = MB4;
+static int standardMailbox = MB0;
+static int extendedMailbox = MB4;
 
+/// Verison 1 of BurtCan, reads only one motor
 template <class CanType>
 BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds) : 
-	id(id),
+	idStart(id),
+	idEnd(-1),
+	onMessage(onMessage),
+	useExtendedIds(useExtendedIds)
+	{ }
+
+/// Verison 2 of BurtCan, reads motors with IDs in the range [idStart, idEnd]
+template <class CanType>
+BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessage, bool useExtendedIds) :
+	idStart(idStart),
+	idEnd(idEnd),
 	onMessage(onMessage),
 	useExtendedIds(useExtendedIds)
 	{ }
@@ -18,14 +30,22 @@ void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
 template <class CanType>
 void BurtCan<CanType>::setup() {
 	// Sets the baud rate and default message policy. 
-  can.begin();
-  can.setBaudRate(CAN_BAUD_RATE);
-  can.setMBFilter(REJECT_ALL);
+	can.begin();
+	can.setBaudRate(CAN_BAUD_RATE);
+	can.setMBFilter(REJECT_ALL);
 
-  // Creates a new mailbox set to handle [id] with [handler]. 
-  FLEXCAN_MAILBOX mb = FLEXCAN_MAILBOX(mailbox);
-  can.setMBFilter(mb, id);
-  mailbox += 1;
+	FLEXCAN_MAILBOX mb = useExtendedIds
+		?  FLEXCAN_MAILBOX(extendedMailbox++)
+		:  FLEXCAN_MAILBOX(standardMailbox++);
+
+
+	if (idEnd == 0xFFFFFFFF){  // only one ID to listen to 
+			// Creates a new mailbox set to handle [id] with [handler]. 
+			can.setMBFilter(mb, idStart);
+	} else {  // listen to a range
+			// Creates a new mailbox set to handle [id] with [handler]. 
+			can.setMBFilterRange(mb, idStart, idEnd);
+	}
 }
 
 template <class CanType>
