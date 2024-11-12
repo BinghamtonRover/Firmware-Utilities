@@ -31,13 +31,18 @@ void BurtSerial::update() {
 	switch(msg.type)
 	{
 		case MessageType::HEARTBEAT:
+			// check sender validity?
 			break;
 		case MessageType::DISCONNECT:
+			uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
+			Serial.write(response, 4);
+			isConnected = false;
 			break;
 		case MessageType::COMMAND:
+			// what special thing we do here other than onMessage(input,length) lil bro
 			break;
 		default:
-			break;
+			onMessage(input, length);
 		
 	}
 
