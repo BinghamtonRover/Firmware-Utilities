@@ -8,13 +8,13 @@ BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t
 	length(length)
 	{ }
 
-bool isResetCode(uint8_t* buffer, int length) {
-	return length >= 4
-		&& buffer[0] == 0
-		&& buffer[1] == 0
-		&& buffer[2] == 0
-		&& buffer[3] == 0;
-}
+// bool isResetCode(uint8_t* buffer, int length) {
+// 	return length >= 4
+// 		&& buffer[0] == 0
+// 		&& buffer[1] == 0
+// 		&& buffer[2] == 0
+// 		&& buffer[3] == 0;
+// }
 
 void BurtSerial::update() {
 	int length = Serial.available();
@@ -22,16 +22,19 @@ void BurtSerial::update() {
 	uint8_t input[length];
 	int receivedLength = Serial.readBytes((char*) input, length);
 
-	if (!isConnected) {
+	if (!isConnected)
 		tryConnect(input, length);
-	} else if (isResetCode(input, receivedLength)) {
-		// This is our special "reset" code. Respond with 1111
-		uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
-		Serial.write(response, 4);
-		isConnected = false;
-	} else {
-		onMessage(input, length);
-	}
+
+	// NO CHECK 
+	WrappedMessage msg = BurtProto::decode<WrappedMessage>(input, length, WrappedMessage_fields);
+	// } else if (isResetCode(input, receivedLength)) {
+	// 	// This is our special "reset" code. Respond with 1111
+	// 	uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
+	// 	Serial.write(response, 4);
+	// 	isConnected = false;
+	// } else {
+	// 	onMessage(input, length);
+	// }
 }
 
 // CHANGE THIS
