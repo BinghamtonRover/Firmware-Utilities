@@ -27,6 +27,20 @@ void BurtSerial::update() {
 
 	// NO CHECK 
 	WrappedMessage msg = BurtProto::decode<WrappedMessage>(input, length, WrappedMessage_fields);
+
+	switch(msg.type)
+	{
+		case MessageType::HEARTBEAT:
+			break;
+		case MessageType::DISCONNECT:
+			break;
+		case MessageType::COMMAND:
+			break;
+		default:
+			break;
+		
+	}
+
 	// } else if (isResetCode(input, receivedLength)) {
 	// 	// This is our special "reset" code. Respond with 1111
 	// 	uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
@@ -67,6 +81,11 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
 bool BurtSerial::send(const void* message) {
+
+	// Wrap it to wrapped message
+	BurtProto::encode()
+
+	// 
 	if (!isConnected) return false;
 
 	uint8_t* buffer = new uint8_t[length];
@@ -75,4 +94,9 @@ bool BurtSerial::send(const void* message) {
 	int sentLength = Serial.write(buffer, encodedLength);
 	delete[] buffer;
 	return encodedLength == sentLength;
+}
+
+bool BurtSerial:sendLogMessage(BurtLog message){
+	
+	return true;
 }
