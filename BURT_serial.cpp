@@ -22,8 +22,9 @@ void BurtSerial::update() {
 	uint8_t input[length];
 	int receivedLength = Serial.readBytes((char*) input, length);
 
-	if (!isConnected)
+	if (!isConnected){
 		tryConnect(input, length);
+	}
 
 	// NO CHECK 
 	WrappedMessage msg = BurtProto::decode<WrappedMessage>(input, length, WrappedMessage_fields);
@@ -35,7 +36,8 @@ void BurtSerial::update() {
 			break;
 		case MessageType::DISCONNECT:
 			uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
-			Serial.write(response, 4);
+			//Serial.write(response, 4);
+			BurtSerial::send(response)
 			isConnected = false;
 			break;
 		case MessageType::COMMAND:

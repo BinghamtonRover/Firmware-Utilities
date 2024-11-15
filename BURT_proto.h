@@ -18,7 +18,7 @@ class BurtProto {
 		static std::optional<T> decode(const uint8_t* buffer, int length, const pb_msgdesc_t* fields) {
 			T result;
 			if(!decodeRaw(buffer, length, fields, &result))
-				return {};
+				return std::nullopt;
 			return result;
 		}
 };
