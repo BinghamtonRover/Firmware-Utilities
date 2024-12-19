@@ -2,12 +2,13 @@
 #include "BURT_proto.h"
 #include "version.pb.h"
 
-BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length, Version version) :
+BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length, Version version, bool receipt = false) :
 	device(device),
 	onMessage(onMessage),
 	descriptor(descriptor),
 	length(length),
-	version(version)
+	version(version),
+	receipt(receipt),
 	{ }
 
 // bool isResetCode(uint8_t* buffer, int length) {
@@ -31,8 +32,9 @@ void BurtSerial::update() {
 	// NO CHECK 
 	WrappedMessage msg = BurtProto::decode<WrappedMessage>(input, length, WrappedMessage_fields);
 
-	if(msg.version.major != this->version)
+	if(msg.version.major != this->version.major)
 	{
+	
 		// Send back invalid version message?
 	}
 
@@ -49,7 +51,7 @@ void BurtSerial::update() {
 			break;
 		case MessageType::COMMAND:
 			// what special thing we do here other than onMessage(input,length) lil bro
-			break;
+			// break;
 		default:
 			onMessage(input, length);
 		

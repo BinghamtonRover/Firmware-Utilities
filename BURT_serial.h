@@ -15,6 +15,7 @@ class BurtSerial {
 		bool send(const void* message);
 		void decode();
 		bool sendLogMessage(BurtLog message);
+		bool receipt;
 
 	private: 
 		void tryConnect(uint8_t* input, int length);
