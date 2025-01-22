@@ -1,6 +1,7 @@
 #include "BURT_serial.h"
 #include "BURT_proto.h"
 #include "version.pb.h"
+#include "wrapper.pb.h"
 
 BurtSerial::BurtSerial(Device device, ProtoHandler onMessage, const pb_msgdesc_t* descriptor, int length, Version version, bool receipt = false) :
 	device(device),
@@ -32,29 +33,30 @@ void BurtSerial::update() {
 	// NO CHECK 
 	WrappedMessage msg = BurtProto::decode<WrappedMessage>(input, length, WrappedMessage_fields);
 
-	if(msg.version.major != this->version.major)
+	if(msg.Version.major != this->Version.major)
 	{
-	
+		return;
 		// Send back invalid version message?
 	}
 
-	switch(msg.type)
+	switch(msg.MessageType)
 	{
-		case MessageType::HEARTBEAT:
+		case MessageType::MessageType_HEARTBEAT:
+			BurtSerial::send(std::nullopt, MessageType::MessageType_HEARTBEAT)
 			// check sender validity?
 			break;
-		case MessageType::DISCONNECT:
+		case MessageType::MessageType_DISCONNECT:
 			uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
 			//Serial.write(response, 4);
-			BurtSerial::send(response)
+			BurtSerial::send(response, MessageType::MessageType_DISCONNECT)
+			onDisconnect();
 			isConnected = false;
 			break;
-		case MessageType::COMMAND:
-			// what special thing we do here other than onMessage(input,length) lil bro
-			// break;
-		default:
+		case MessageType::MessageType_COMMAND:
 			onMessage(input, length);
-		
+			// break;
+		case MessageType_DATA:
+			BurtSerial::send(input)
 	}
 
 	// } else if (isResetCode(input, receivedLength)) {
@@ -96,12 +98,14 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * @param length The maximum length of the encoded message. Use the generated MessageName_size.
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
-bool BurtSerial::send(const void* message) {
+bool BurtSerial::send(const std::optional<void*> message, const MessageType& msgType = MessageType::MessageType_DATA) {
 
+	// Check if message null -> then skip encode (example case: heartbeat)
+	
 	// Wrap it to wrapped message
 	BurtProto::encode()
 
-	// 
+	// check if connected, if not, return false
 	if (!isConnected) return false;
 
 	uint8_t* buffer = new uint8_t[length];
