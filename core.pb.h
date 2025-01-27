@@ -21,7 +21,9 @@ typedef enum _Device {
     Device_GRIPPER = 7,
     Device_SCIENCE = 8,
     Device_DRIVE = 9,
-    Device_RELAY = 10
+    Device_RELAY = 10,
+    Device_BASE_STATION = 11,
+    Device_ANTENNA = 12
 } Device;
 
 /* Struct definitions */
@@ -43,8 +45,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _Device_MIN Device_DEVICE_UNDEFINED
-#define _Device_MAX Device_RELAY
-#define _Device_ARRAYSIZE ((Device)(Device_RELAY+1))
+#define _Device_MAX Device_ANTENNA
+#define _Device_ARRAYSIZE ((Device)(Device_ANTENNA+1))
 
 #define Connect_sender_ENUMTYPE Device
 #define Connect_receiver_ENUMTYPE Device
