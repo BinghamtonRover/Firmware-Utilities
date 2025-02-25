@@ -81,7 +81,7 @@ class BurtCan {
 		void update();
 
 		/// Sends a byte array over the CAN bus with the given ID.
-		void sendRaw(uint32_t id, uint8_t data[8], int length);
+		bool sendRaw(uint32_t id, uint8_t data[8], int length);
 
 		/// Encodes the given message and fields then sends it using #sendRaw.
 		bool send(uint32_t id, const void* message, const pb_msgdesc_t* fields);
