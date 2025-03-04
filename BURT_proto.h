@@ -8,6 +8,7 @@
 #include "core.pb.h"
 #include "types.h"
 
+#include <optional>
 
 class BurtProto {
 	public:

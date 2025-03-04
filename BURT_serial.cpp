@@ -56,29 +56,52 @@ void BurtSerial::update() {
 	{
 		case MessageType::MessageType_HEARTBEAT:
 		{
+<<<<<<< HEAD
 			BurtSerial::send(reinterpret_cast<const void*>(onMessage), MessageType::MessageType_HEARTBEAT);
+=======
+			BurtSerial::send(nullptr, MessageType::MessageType_HEARTBEAT);
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 			// check sender validity?
 			break;
 		}
 		case MessageType::MessageType_DISCONNECT:
 		{
+<<<<<<< HEAD
 			BurtSerial::send(reinterpret_cast<const void*>(onDisconnect), receivedLength, MessageType::MessageType_DISCONNECT);
+=======
+			uint8_t response[4] = {0x01, 0x01, 0x01, 0x01};
+			//Serial.write(response, 4);
+			BurtSerial::send(response, MessageType::MessageType_DISCONNECT);
+			onDisconnect();
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 			isConnected = false;
 			break;
 		}
 		case MessageType::MessageType_COMMAND:
 		{
+<<<<<<< HEAD
 			BurtSerial::send(reinterpret_cast<const void*>(onMessage), receivedLength, MessageType::MessageType_COMMAND);
+=======
+			onMessage(input, length);
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 			break;
 		}
 		case MessageType::MessageType_DATA:
 		{
+<<<<<<< HEAD
 			BurtSerial::send(reinterpret_cast<const void*>(onMessage), receivedLength, MessageType::MessageType_COMMAND);
+=======
+			BurtSerial::send(msg.data);
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 			break;
 		}
 		case MessageType::MessageType_LOG_MESSAGE:
 		{
+<<<<<<< HEAD
 			BurtSerial::sendLogMessage(reinterpret_cast<const void*>(onMessage), receivedLength);
+=======
+			BurtSerial::sendLogMessage(msg.data);
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 			break;
 		}
 	}
@@ -131,7 +154,11 @@ void BurtSerial::tryConnect(uint8_t* input, int length) {
  * @param length The maximum length of the encoded message. Use the generated MessageName_size.
  * @return Returns `true` if the entire message is sent successfully, `false` otherwise.
  */
+<<<<<<< HEAD
 bool BurtSerial::send(const void* message, const int length, const MessageType& msgType) {
+=======
+bool BurtSerial::send(const void* message, const MessageType& msgType) {
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 
 	// Check if message null -> then skip encode (example case: heartbeat)
 
@@ -146,7 +173,11 @@ bool BurtSerial::send(const void* message, const int length, const MessageType& 
 	return encodedLength == sentLength;
 }
 
+<<<<<<< HEAD
 bool BurtSerial::sendLogMessage(const void* message, int length){
+=======
+bool BurtSerial::sendLogMessage(BurtLog message){
+>>>>>>> c6175e6353f3388790cc52459e903a5aa403b07a
 	
 	return true;
 }
