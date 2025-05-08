@@ -6,7 +6,6 @@
 #include "nanopb/pb_decode.h"
 
 #include "core.pb.h"
-#include "status.pb.h"
 #include "types.h"
 
 
