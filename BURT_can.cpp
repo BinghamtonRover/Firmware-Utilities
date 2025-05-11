@@ -27,12 +27,7 @@ BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage
 }
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(BurtCanConfig config) :
-	config(config) {
-	heartbeatTimer = BurtTimer(HEARTBEAT_CHECK_MS, [this]() -> void {
-		this->checkHeartbeats();
-	});
-}
+BurtCan<CanType>::BurtCan(BurtCanConfig config) : config(config) {}
 
 template <class CanType>
 void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {

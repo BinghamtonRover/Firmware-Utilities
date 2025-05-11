@@ -97,7 +97,9 @@ class BurtCan {
 		/// Calls #onMessage when new messages are received.
 		void handleCanFrame(const CanMessage &message);
 
-		BurtTimer heartbeatTimer = BurtTimer(1e9, []() {});
+		BurtTimer heartbeatTimer = BurtTimer(HEARTBEAT_CHECK_MS, [this]() -> void {
+			this->checkHeartbeats();
+		});
 
 		bool receivedHeartbeat = false;
 
