@@ -13,7 +13,7 @@
 #define ROVER_NETWORK_BAUD_RATE 500000
 #define DATA_LENGTH 8
 
-#define HEARTBEAT_CHECK_MS 100
+#define HEARTBEAT_CHECK_MS 150
 
 /// The CAN service using the Teensy pins at CAN1.
 using Can1 = FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16>;

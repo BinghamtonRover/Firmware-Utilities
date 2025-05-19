@@ -43,6 +43,10 @@ void BurtCan<CanType>::onHeartbeatMessage(const CanMessage& message) {
 	rover_rover_heartbeat_t heartbeat = {0};
 	rover_rover_heartbeat_unpack(&heartbeat, message.buf, message.len);
 	receivedHeartbeat = true;
+	if (!isConnected) {
+		isConnected = true;
+		config.onConnect();
+	}
 	// TODO: Update an internal rover status
 	sendBroadcastMessage();
 }
@@ -62,17 +66,9 @@ void BurtCan<CanType>::sendBroadcastMessage() {
 
 template <class CanType>
 void BurtCan<CanType>::checkHeartbeats() {
-	if (!receivedHeartbeat) {
-		if (isConnected) {
-			config.onDisconnect();
-			isConnected = false;
-		}
-	} else {
-		if (!isConnected) {
-			isConnected = true;
-			config.onConnect();
-		}
-		sendBroadcastMessage();
+	if (!receivedHeartbeat && isConnected) {
+		config.onDisconnect();
+		isConnected = false;
 	}
 	receivedHeartbeat = false;
 }
