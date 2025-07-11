@@ -42,7 +42,7 @@ template <class CanType>
 void BurtCan<CanType>::onHeartbeatMessage(const CanMessage& message) {
 	rover_rover_heartbeat_t heartbeat = {0};
 	rover_rover_heartbeat_unpack(&heartbeat, message.buf, message.len);
-	receivedHeartbeat = true;
+	lastHeartbeatTime = millis();
 	if (!isConnected) {
 		isConnected = true;
 		config.onConnect();
@@ -66,16 +66,18 @@ void BurtCan<CanType>::sendBroadcastMessage() {
 
 template <class CanType>
 void BurtCan<CanType>::checkHeartbeats() {
-	if (!receivedHeartbeat && isConnected) {
+	if (!isConnected) {
+		return;
+	}
+
+	if (millis() - lastHeartbeatTime > HEARTBEAT_TIMEOUT_MS) {
 		config.onDisconnect();
 		isConnected = false;
 	}
-	receivedHeartbeat = false;
 }
 
 template <class CanType>
 void BurtCan<CanType>::setup() {
-	heartbeatTimer.setup();
 	// Sets the baud rate and default message policy.
 	can.begin();
 	can.setMBFilter(REJECT_ALL);
@@ -111,16 +113,16 @@ void BurtCan<CanType>::setup() {
 
 template <class CanType>
 void BurtCan<CanType>::update() {
-	if (config.isRoverNetwork) {
-		heartbeatTimer.update();
-	}
 	int count = 0;
 	while (true) {
 		CanMessage message;
 		int success = can.read(message);  // 0=no message, 1=message read
-		if (success == 0) return;
+		if (success == 0) break;
 		count++;
 		handleCanFrame(message);
+	}
+	if (config.isRoverNetwork) {
+		checkHeartbeats();
 	}
 }
 

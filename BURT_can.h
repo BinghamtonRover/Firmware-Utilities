@@ -7,13 +7,12 @@
 
 #include "BURT_proto.h"
 #include "../version.pb.h"
-#include "BURT_timer.h"
 
 #define CAN_BAUD_RATE 500000
 #define ROVER_NETWORK_BAUD_RATE 500000
 #define DATA_LENGTH 8
 
-#define HEARTBEAT_CHECK_MS 150
+#define HEARTBEAT_TIMEOUT_MS 150
 
 /// The CAN service using the Teensy pins at CAN1.
 using Can1 = FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16>;
@@ -97,13 +96,9 @@ class BurtCan {
 		/// Calls #onMessage when new messages are received.
 		void handleCanFrame(const CanMessage &message);
 
-		BurtTimer heartbeatTimer = BurtTimer(HEARTBEAT_CHECK_MS, [this]() -> void {
-			this->checkHeartbeats();
-		});
-
-		bool receivedHeartbeat = false;
-
 		bool isConnected = false;
+
+		unsigned long lastHeartbeatTime = millis();
 
 	public:
 		/// A CAN node that listens to messages with one CAN ID.
