@@ -8,38 +8,27 @@ static int standardMailbox = MB0;
 static int extendedMailbox = MB4;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds) :
-	idStart(id),
-	idEnd(0),
-	onMessage(onMessage),
-	useExtendedIds(useExtendedIds)
-	{ }
+BurtCan<CanType>::BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds) {
+	config = {
+		.idStart = id,
+		.onMessage = onMessage,
+		.useExtendedIds = useExtendedIds
+	};
+}
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds) :
-	idStart(idStart),
-	idEnd(idEnd),
-	onMessage(onMessage),
-	useExtendedIds(useExtendedIds)
-	{ }
+BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds) {
+	config = {
+		.idStart = idStart,
+		.idEnd = idEnd,
+		.onMessage = onMessage,
+		.useExtendedIds = useExtendedIds
+	};
+}
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(
-	uint32_t nodeId,
-	Device device,
-	Version version,
-	CanHandler onMessage,
-	VoidCallback onDisconnect,
-	VoidCallback onConnect = []() {},
-	bool useExtendedIds) :
-		idStart(nodeId),
-		idEnd(nodeId | 0x0F),
-		onMessage(onMessage),
-		device(device),
-		version(version),
-		onDisconnect(onDisconnect),
-		onConnect(onConnect),
-		useExtendedIds(useExtendedIds) {
+BurtCan<CanType>::BurtCan(BurtCanConfig config) :
+	config(config) {
 	heartbeatTimer = BurtTimer(HEARTBEAT_CHECK_MS, [this]() -> void {
 		this->checkHeartbeats();
 	});
@@ -47,10 +36,10 @@ BurtCan<CanType>::BurtCan(
 
 template <class CanType>
 void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
-	if (message.id == ROVER_ROVER_HEARTBEAT_FRAME_ID) {
+	if (config.isRoverNetwork && message.id == ROVER_ROVER_HEARTBEAT_FRAME_ID) {
 		onHeartbeatMessage(message);
 	} else {
-		onMessage(message);
+		config.onMessage(message);
 	}
 }
 
@@ -66,9 +55,9 @@ void BurtCan<CanType>::onHeartbeatMessage(const CanMessage& message) {
 template <class CanType>
 void BurtCan<CanType>::sendBroadcastMessage() {
 	rover_device_broadcast_t broadcastMessage = {
-		.device_value = device,
-		.fw_version_major = version.major,
-		.fw_version_minor = version.minor
+		.device_value = static_cast<uint8_t>(config.device),
+		.fw_version_major = static_cast<uint8_t>(config.version.major),
+		.fw_version_minor = static_cast<uint8_t>(config.version.minor)
 	};
 	CanMessage message;
 	message.id = ROVER_DEVICE_BROADCAST_FRAME_ID;
@@ -80,13 +69,13 @@ template <class CanType>
 void BurtCan<CanType>::checkHeartbeats() {
 	if (!receivedHeartbeat) {
 		if (isConnected) {
-			onDisconnect();
+			config.onDisconnect();
 			isConnected = false;
 		}
 	} else {
 		if (!isConnected) {
 			isConnected = true;
-			onConnect();
+			config.onConnect();
 		}
 		sendBroadcastMessage();
 	}
@@ -98,29 +87,31 @@ void BurtCan<CanType>::setup() {
 	heartbeatTimer.setup();
 	// Sets the baud rate and default message policy.
 	can.begin();
-	can.setBaudRate(CAN_BAUD_RATE);
 	can.setMBFilter(REJECT_ALL);
-	if (isRoverCan()) {
+	if (config.isRoverNetwork) {
+		can.setBaudRate(ROVER_NETWORK_BAUD_RATE);
 		can.setClock(CLK_60MHz);
+	} else {
+		can.setBaudRate(CAN_BAUD_RATE);
 	}
 
-	FLEXCAN_MAILBOX mb = useExtendedIds
+	FLEXCAN_MAILBOX mb = config.useExtendedIds
 		? FLEXCAN_MAILBOX(extendedMailbox++)
 		: FLEXCAN_MAILBOX(standardMailbox++);
 
 	// It's unclear if `setMBFilterRange` can be called with a range of [x, x],
 	// so we take care to call the correct function here.
-	if (idEnd == 0) {  // only one ID to listen to
-		can.setMBFilter(mb, idStart);
+	if (config.idEnd == 0 && !config.isRoverNetwork) {  // only one ID to listen to
+		can.setMBFilter(mb, config.idStart);
 	} else {  // listen to a range
-		if (!isRoverCan()) {
-			can.setMBFilterRange(mb, idStart, idEnd);
+		if (!config.isRoverNetwork) {
+			can.setMBFilterRange(mb, config.idStart, config.idEnd);
 		} else {
-			FLEXCAN_MAILBOX hbMailbox = useExtendedIds
+			FLEXCAN_MAILBOX hbMailbox = config.useExtendedIds
 				? FLEXCAN_MAILBOX(extendedMailbox++)
 				: FLEXCAN_MAILBOX(standardMailbox++);
 			can.setMBFilter(hbMailbox, ROVER_ROVER_HEARTBEAT_FRAME_ID);
-			can.setMBFilterRange(mb, idStart, idEnd);
+			can.setMBFilterRange(mb, config.idStart, config.idStart | 0x0F);
 			can.enhanceFilter(mb);
 			can.enhanceFilter(hbMailbox);
 		}
@@ -129,7 +120,7 @@ void BurtCan<CanType>::setup() {
 
 template <class CanType>
 void BurtCan<CanType>::update() {
-	if (isRoverCan()) {
+	if (config.isRoverNetwork) {
 		heartbeatTimer.update();
 	}
 	int count = 0;
@@ -149,7 +140,7 @@ bool BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	}
 	// Initializes a CAN frame with the given data and sends it.
 	CanMessage frame = {};
-	if (useExtendedIds) frame.flags.extended = 1;
+	if (config.useExtendedIds) frame.flags.extended = 1;
 	frame.id = id;
 	frame.len = length;
 	memset(frame.buf, 0, 8);

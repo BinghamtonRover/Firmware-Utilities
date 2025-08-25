@@ -10,6 +10,7 @@
 #include "BURT_timer.h"
 
 #define CAN_BAUD_RATE 500000
+#define ROVER_NETWORK_BAUD_RATE 500000
 #define DATA_LENGTH 8
 
 #define HEARTBEAT_CHECK_MS 100
@@ -28,7 +29,40 @@ using Can3 = FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16>;
 // See https://en.wikipedia.org/wiki/CAN_bus#Data_transmission for details.
 using CanMessage = CAN_message_t;
 
-using CanHandler = void(*)(const CanMessage& message);
+using CanHandler = std::function<void(const CanMessage& message)>;
+
+typedef struct {
+	/// The start of the range of IDs this mailbox will listen to.
+	uint32_t idStart;
+
+	/// The end of the range of IDs this mailbox will listen to.
+	///
+	/// A value of zero indicates no range, just #idStart.
+	uint32_t idEnd = 0;
+
+	/// A user-provided callback to run when a message is received.
+	CanHandler onMessage;
+
+	/// Whether or not to use extended IDs
+	bool useExtendedIds = false;
+
+	/// Whether or not this is on the rover CAN bus network
+	///
+	/// If true, this will check for heartbeats and send broadcast messages
+	bool isRoverNetwork = false;
+
+	/// The device of this CAN node, this is only for rover network configurations
+	Device device = Device::Device_DEVICE_UNDEFINED;
+
+	/// The version of this CAN node, this is only for rover network
+	Version version = Version_init_zero;
+
+	/// Callback to run when the node initially receives a rover heartbeat
+	VoidCallback onConnect = []() {};
+
+	/// Callback to run when the node disconnects from the rover after not receiving heartbeats
+	VoidCallback onDisconnect = []() {};
+} BurtCanConfig;
 
 /// A service to send and receive messages via the CAN bus protocol.
 ///
@@ -52,31 +86,13 @@ class BurtCan {
 		/// The underlying `FlexCAN_T4` instance.
 		CanType can;
 
-		/// The start of the range of IDs this mailbox will listen to.
-		uint32_t idStart;
-
-		/// The end of the range of IDs this mailbox will listen to.
-		///
-		/// A value of zero indicates no range, just #idStart.
-		uint32_t idEnd;
-
-		/// A user-provided callback to run when a message is received.
-		CanHandler onMessage;
-
-		Device device = Device::Device_DEVICE_UNDEFINED;
-		Version version = Version_init_zero;
-
-		VoidCallback onConnect = []() {};
-
-		VoidCallback onDisconnect = []() {};
+		BurtCanConfig config;
 
 		void onHeartbeatMessage(const CanMessage &message);
 
 		void sendBroadcastMessage();
 
 		void checkHeartbeats();
-
-		bool useExtendedIds;
 
 		/// Calls #onMessage when new messages are received.
 		void handleCanFrame(const CanMessage &message);
@@ -87,24 +103,13 @@ class BurtCan {
 
 		bool isConnected = false;
 
-		bool isRoverCan() {
-			return version.major != 0;
-		}
-
 	public:
 		/// A CAN node that listens to messages with one CAN ID.
 		BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds = false);
 		/// A CAN node that listens to messages with a range of CAN IDs.
 		BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds = false);
 
-		BurtCan(
-			uint32_t nodeId,
-			Device device,
-			Version version,
-			CanHandler onMessage,
-			VoidCallback onDisconnect,
-			VoidCallback onConnect = []() {},
-			bool useExtendedIds = false);
+		BurtCan(BurtCanConfig config);
 
 		/// Initializes the CAN hardware to handle messages with the given ID(s).
 		///
