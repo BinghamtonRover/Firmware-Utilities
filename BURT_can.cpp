@@ -7,7 +7,7 @@ static int standardMailbox = MB0;
 static int extendedMailbox = MB4;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds) :
+BurtCan<CanType>::BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds) :
 	idStart(id),
 	idEnd(0),
 	onMessage(onMessage),
@@ -15,7 +15,7 @@ BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedI
 	{ }
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessage, bool useExtendedIds) :
+BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds) :
 	idStart(idStart),
 	idEnd(idEnd),
 	onMessage(onMessage),
@@ -24,7 +24,7 @@ BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessa
 
 template <class CanType>
 void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
-	onMessage(message.buf, message.len);
+	onMessage(message);
 }
 
 template <class CanType>
@@ -55,7 +55,7 @@ void BurtCan<CanType>::update() {
 		int success = can.read(message);  // 0=no message, 1=message read
 		if (success == 0) return;
 		count++;
-		onMessage(message.buf, message.len);
+		onMessage(message);
 	}
 }
 
