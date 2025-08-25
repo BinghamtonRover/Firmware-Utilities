@@ -6,9 +6,13 @@
 #include "FlexCAN_T4/FlexCAN_T4.h"
 
 #include "BURT_proto.h"
+#include "../version.pb.h"
+#include "BURT_timer.h"
 
 #define CAN_BAUD_RATE 500000
 #define DATA_LENGTH 8
+
+#define HEARTBEAT_CHECK_MS 100
 
 /// The CAN service using the Teensy pins at CAN1.
 using Can1 = FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16>;
@@ -59,17 +63,48 @@ class BurtCan {
 		/// A user-provided callback to run when a message is received.
 		CanHandler onMessage;
 
+		Device device = Device::Device_DEVICE_UNDEFINED;
+		Version version = Version_init_zero;
+
+		VoidCallback onConnect = []() {};
+
+		VoidCallback onDisconnect = []() {};
+
+		void onHeartbeatMessage(const CanMessage &message);
+
+		void sendBroadcastMessage();
+
+		void checkHeartbeats();
+
 		bool useExtendedIds;
 
 		/// Calls #onMessage when new messages are received.
-		void handleCanFrame(const CanMessage& message);
+		void handleCanFrame(const CanMessage &message);
+
+		BurtTimer heartbeatTimer = BurtTimer(1e9, []() {});
+
+		bool receivedHeartbeat = false;
+
+		bool isConnected = false;
+
+		bool isRoverCan() {
+			return version.major != 0;
+		}
 
 	public:
-		/// A CAN mailbox that listens to messages with one CAN ID.
+		/// A CAN node that listens to messages with one CAN ID.
 		BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds = false);
-
-		/// A CAN mailbox that listens to messages with a range of CAN IDs.
+		/// A CAN node that listens to messages with a range of CAN IDs.
 		BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds = false);
+
+		BurtCan(
+			uint32_t nodeId,
+			Device device,
+			Version version,
+			CanHandler onMessage,
+			VoidCallback onDisconnect,
+			VoidCallback onConnect = []() {},
+			bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with the given ID(s).
 		///
@@ -87,6 +122,14 @@ class BurtCan {
 		/// Encodes the given message and fields then sends it using #sendRaw.
 		bool send(uint32_t id, const void* message, const pb_msgdesc_t* fields);
 
+		/// Sends a raw CAN message over the CAN bus
+		void sendMessage(const CanMessage& message);
+
 		/// Shows debug info about this CAN bus.
 		void showDebugInfo();
+
+		/// Whether or not this node is connected to the rover
+		bool isRoverConnected() {
+			return isConnected;
+		}
 };
