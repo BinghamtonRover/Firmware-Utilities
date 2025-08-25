@@ -40,7 +40,7 @@ void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
 
 template <class CanType>
 void BurtCan<CanType>::onHeartbeatMessage(const CanMessage& message) {
-	rover_rover_heartbeat_t heartbeat;
+	rover_rover_heartbeat_t heartbeat = {0};
 	rover_rover_heartbeat_unpack(&heartbeat, message.buf, message.len);
 	receivedHeartbeat = true;
 	// TODO: Update an internal rover status
@@ -49,11 +49,11 @@ void BurtCan<CanType>::onHeartbeatMessage(const CanMessage& message) {
 
 template <class CanType>
 void BurtCan<CanType>::sendBroadcastMessage() {
-	rover_device_broadcast_t broadcastMessage = {
-		.device_value = static_cast<uint8_t>(config.device),
-		.fw_version_major = static_cast<uint8_t>(config.version.major),
-		.fw_version_minor = static_cast<uint8_t>(config.version.minor)
-	};
+	rover_device_broadcast_t broadcastMessage = {0};
+	broadcastMessage.device_value = static_cast<uint8_t>(config.device);
+	broadcastMessage.fw_version_major = static_cast<uint8_t>(config.version.major);
+	broadcastMessage.fw_version_minor = static_cast<uint8_t>(config.version.minor);
+
 	CanMessage message;
 	message.id = ROVER_DEVICE_BROADCAST_FRAME_ID;
 	message.len = rover_device_broadcast_pack(message.buf, &broadcastMessage, message.len);
