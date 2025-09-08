@@ -59,7 +59,7 @@ void BurtCan<CanType>::sendBroadcastMessage() {
 	broadcastMessage.fw_version_minor = static_cast<uint8_t>(config.version.minor);
 
 	CanMessage message;
-	message.id = ROVER_DEVICE_BROADCAST_FRAME_ID;
+	message.id = (config.idStart << 8) | ROVER_DEVICE_BROADCAST_FRAME_ID;
 	message.len = rover_device_broadcast_pack(message.buf, &broadcastMessage, message.len);
 	sendMessage(message);
 }
@@ -104,7 +104,7 @@ void BurtCan<CanType>::setup() {
 				? FLEXCAN_MAILBOX(extendedMailbox++)
 				: FLEXCAN_MAILBOX(standardMailbox++);
 			can.setMBFilter(hbMailbox, ROVER_ROVER_HEARTBEAT_FRAME_ID);
-			can.setMBFilterRange(mb, config.idStart, config.idStart | 0x0F);
+			can.setMBFilterRange(mb, config.idStart << 8, (config.idStart << 8) | 0xFF);
 			can.enhanceFilter(mb);
 			can.enhanceFilter(hbMailbox);
 		}
