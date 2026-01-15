@@ -8,6 +8,7 @@
 #include "core.pb.h"
 #include "types.h"
 
+#include <optional>
 
 class BurtProto {
 	public:
@@ -15,9 +16,10 @@ class BurtProto {
 		static bool decodeRaw(const uint8_t* buffer, int length, const pb_msgdesc_t* fields, void* message);
 
 		template<typename T>
-		static T decode(const uint8_t* buffer, int length, const pb_msgdesc_t* fields) {
+		static std::optional<T> decode(const uint8_t* buffer, int length, const pb_msgdesc_t* fields) {
 			T result;
-			decodeRaw(buffer, length, fields, &result);
+			if(!decodeRaw(buffer, length, fields, &result))
+				return std::nullopt;
 			return result;
 		}
 };
