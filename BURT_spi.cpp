@@ -1,10 +1,6 @@
 #include "BURT_spi.h"
 
-/// @brief For use with 74hc4515 4:16 Decoder IC for Chip Select
-/// @param CS_addr array of 4 pins serving as addressing pins to the decoder
-/// @param addr_EN enables the decoder to change its addr
-/// @param out_EN enables the selected output (active LOW)
-/// @param delay_us optional; small delay after successful transaction (keep below 10us)
+
 BurtSPI::BurtSPI(uint8_t CS_addr[4], uint8_t addr_EN, uint8_t out_EN, unsigned delay_us) :
     CS_addr(CS_addr),
     addr_EN(addr_EN),
@@ -49,7 +45,7 @@ BurtSPI::prepareTransaction(uint8_t addr) {
 
         delayMicroseconds(1);
 
-        digitalWrite(out_EN, LOW);
+        digitalWrite(out_EN, LOW); // Prepped for transaction
     }   
 }
 
