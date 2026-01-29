@@ -34,17 +34,12 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
         idle = false;
         digitalWrite(addr_EN, LOW); // Enable addr selection
 
-        delayMicroseconds(1);
-
         digitalWrite(CS_addr[0], (addr & 0b00000001));
         digitalWrite(CS_addr[1], (addr & 0b00000010));
         digitalWrite(CS_addr[2], (addr & 0b00000100));
         digitalWrite(CS_addr[3], (addr & 0b00001000));
 
-        delayMicroseconds(1);
-
         digitalWrite(addr_EN, HIGH); // Latch addr
-        delayMicroseconds(1);
 
         return true;
     }   
