@@ -6,7 +6,7 @@
 /// @param CS_addr array of 4 pins serving as addressing pins to the decoder
 /// @param addr_EN enables the decoder to change its addr
 /// @param out_EN enables the selected output (active LOW)
-/// @param delay_us optional; small delay after successful transaction (keep below 10us)
+/// @param delay_us small delay after successful transaction, pass 0 to disable (keep below 10us)
 class BurtSPI {
     private:
         uint8_t CS_addr[4];
