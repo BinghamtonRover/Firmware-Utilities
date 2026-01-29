@@ -7,7 +7,8 @@
 Call Order:
 if (BurtSPI.prepareTransaction(device_addr)) {
     device.func_that_uses_SPI(out_EN);
-}
+} else 
+{ /.* Raise error flag *./}
 BurtSPI.goToIdle();
 
 This will ensure that the bus is idle, then set up the correct virtual CS/addr pin

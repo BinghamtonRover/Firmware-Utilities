@@ -26,7 +26,6 @@ void BurtSPI::setupSPI() {
 
 bool BurtSPI::prepareTransaction(uint8_t addr) {
     if (!idle) {
-        Serial.println("SPI Bus not ready for transaction");
         digitalWrite(out_EN, HIGH);
         return false;
     }
