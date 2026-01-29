@@ -8,7 +8,7 @@ BurtSPI::BurtSPI(uint8_t CS_addr[4], uint8_t addr_EN, uint8_t out_EN, unsigned d
     delay_us(delay_us)
     { }
 
-BurtSPI::setupSPI() {
+void BurtSPI::setupSPI() {
     pinMode(CS_addr[0], OUTPUT);
     pinMode(CS_addr[1], OUTPUT);
     pinMode(CS_addr[2], OUTPUT);
@@ -24,7 +24,7 @@ BurtSPI::setupSPI() {
     Serial.println("SPI Bus Initialized");
 }
 
-BurtSPI::prepareTransaction(uint8_t addr) {
+bool BurtSPI::prepareTransaction(uint8_t addr) {
     if (!idle) {
         Serial.println("SPI Bus not ready for transaction");
         return false;
@@ -47,10 +47,11 @@ BurtSPI::prepareTransaction(uint8_t addr) {
         delayMicroseconds(1);
 
         digitalWrite(out_EN, LOW); // Prepped for transaction
+        return true;
     }   
 }
 
-BurtSPI::goToIdle() {
+void BurtSPI::goToIdle() {
     digitalWrite(out_EN, HIGH);
     idle = true;
     if (delay_us) delayMicroseconds(delay_us);
