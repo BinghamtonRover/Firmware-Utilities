@@ -20,16 +20,17 @@ BurtSPI::setupSPI() {
     digitalWrite(out_EN,  HIGH);
 
     SPI.begin();
-    ready = true;
+    idle = true;
     Serial.println("SPI Bus Initialized");
 }
 
 BurtSPI::prepareTransaction(uint8_t addr) {
-    if (!ready) {
+    if (!idle) {
         Serial.println("SPI Bus not ready for transaction");
         return false;
     }
     else {
+        idle = false;
         digitalWrite(addr_EN, LOW); // Enable addr selection
 
         delayMicroseconds(1);
