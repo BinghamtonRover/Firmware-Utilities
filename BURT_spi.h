@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <SPI.h>
+#include <stdint.h>
 
 /// @brief For use with 74hc4515 4:16 Decoder IC for Chip Select
 /// @param CS_addr array of 4 pins serving as addressing pins to the decoder
