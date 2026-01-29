@@ -31,18 +31,17 @@ void BurtSPI::setupSPI() {
 }
 
 bool BurtSPI::prepareTransaction(uint8_t addr) {
-    if (!idle) {
-        digitalWrite(out_EN, HIGH);
-        return false;
-    }
+    digitalWrite(out_EN, HIGH);
+    addr &= 0x0F;
+    if (!idle) return false;
     else {
         idle = false;
         digitalWrite(addr_EN, LOW); // Enable addr selection
 
-        digitalWrite(CS_addr[0], (addr & 0b00000001));
-        digitalWrite(CS_addr[1], (addr & 0b00000010));
-        digitalWrite(CS_addr[2], (addr & 0b00000100));
-        digitalWrite(CS_addr[3], (addr & 0b00001000));
+        digitalWrite(CS_addr[0], (addr & 0b00000001) ? HIGH : LOW);
+        digitalWrite(CS_addr[1], (addr & 0b00000010) ? HIGH : LOW);
+        digitalWrite(CS_addr[2], (addr & 0b00000100) ? HIGH : LOW);
+        digitalWrite(CS_addr[3], (addr & 0b00001000) ? HIGH : LOW);
 
         digitalWrite(addr_EN, HIGH); // Latch addr
 
