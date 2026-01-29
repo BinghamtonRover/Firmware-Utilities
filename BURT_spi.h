@@ -35,4 +35,4 @@ class BurtSPI {
         void setupSPI();
         bool prepareTransaction(uint8_t addr);
         void goToIdle();
-}
+};
