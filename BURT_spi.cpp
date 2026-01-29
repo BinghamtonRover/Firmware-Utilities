@@ -15,15 +15,16 @@ BurtSPI::BurtSPI(const uint8_t (&cs_addr_pins)[4],
     }
 
 void BurtSPI::setupSPI() {
-    pinMode(CS_addr[0], OUTPUT);
-    pinMode(CS_addr[1], OUTPUT);
-    pinMode(CS_addr[2], OUTPUT);
-    pinMode(CS_addr[3], OUTPUT);
     pinMode(addr_EN,    OUTPUT);
     pinMode(out_EN,     OUTPUT);
 
     digitalWrite(addr_EN, HIGH);
     digitalWrite(out_EN,  HIGH);
+
+    pinMode(CS_addr[0], OUTPUT);
+    pinMode(CS_addr[1], OUTPUT);
+    pinMode(CS_addr[2], OUTPUT);
+    pinMode(CS_addr[3], OUTPUT);
 
     SPI.begin();
     idle = true;
