@@ -10,7 +10,7 @@ BurtSPI::BurtSPI(const uint8_t (&cs_addr_pins)[4],
     delay_us(delay_us)
     { 
         for (int i = 0; i < 4; i++) {
-            CS_addr[1] = cs_addr_pins[i];
+            CS_addr[i] = cs_addr_pins[i];
         }
     }
 
