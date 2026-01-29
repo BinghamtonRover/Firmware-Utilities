@@ -32,11 +32,11 @@ class BurtSPI {
 
         bool idle = false;
     public:
-        BurtSPI::BurtSPI(const uint8_t (&cs_addr_pins)[4],
-                 uint8_t addr_EN,
-                 uint8_t out_EN,
-                 unsigned delay_us);
-                 
+        BurtSPI(const uint8_t (&cs_addr_pins)[4],
+                uint8_t addr_EN,
+                uint8_t out_EN,
+                unsigned delay_us);
+
         void setupSPI();
         bool prepareTransaction(uint8_t addr);
         void goToIdle();
