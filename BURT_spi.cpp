@@ -50,3 +50,9 @@ BurtSPI::prepareTransaction(uint8_t addr) {
     }   
 }
 
+BurtSPI::goToIdle() {
+    digitalWrite(out_EN, HIGH);
+    idle = true;
+    if (delay_us) delayMicroseconds(delay_us);
+}
+
