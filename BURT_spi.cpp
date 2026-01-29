@@ -43,10 +43,8 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
         delayMicroseconds(1);
 
         digitalWrite(addr_EN, HIGH); // Latch addr
-
         delayMicroseconds(1);
-
-        digitalWrite(out_EN, LOW); // Prepped for transaction
+        
         return true;
     }   
 }
