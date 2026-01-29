@@ -23,6 +23,7 @@ then close the transaction and go back to idle
 /// @param delay_us small delay after successful transaction, pass 0 to disable (keep below 10us)
 class BurtSPI {
     private:
+
         uint8_t CS_addr[4];
         uint8_t addr_EN;
         uint8_t out_EN;
@@ -31,8 +32,11 @@ class BurtSPI {
 
         bool idle = false;
     public:
-        BurtSPI(uint8_t CS_addr[4], uint8_t addr_EN, uint8_t out_EN, unsigned delay_us);
-
+        BurtSPI::BurtSPI(const uint8_t (&cs_addr_pins)[4],
+                 uint8_t addr_EN,
+                 uint8_t out_EN,
+                 unsigned delay_us);
+                 
         void setupSPI();
         bool prepareTransaction(uint8_t addr);
         void goToIdle();

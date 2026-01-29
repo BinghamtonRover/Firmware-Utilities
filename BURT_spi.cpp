@@ -1,12 +1,18 @@
 #include "BURT_spi.h"
 
 
-BurtSPI::BurtSPI(uint8_t CS_addr[4], uint8_t addr_EN, uint8_t out_EN, unsigned delay_us) :
-    CS_addr(CS_addr),
+BurtSPI::BurtSPI(const uint8_t (&cs_addr_pins)[4],
+                 uint8_t addr_EN,
+                 uint8_t out_EN,
+                 unsigned delay_us) :
     addr_EN(addr_EN),
     out_EN(out_EN),
     delay_us(delay_us)
-    { }
+    { 
+        for (int i = 0; i < 4; i++) {
+            CS_addr[1] = cs_addr_pins[i];
+        }
+    }
 
 void BurtSPI::setupSPI() {
     pinMode(CS_addr[0], OUTPUT);
