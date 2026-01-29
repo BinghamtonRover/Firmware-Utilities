@@ -38,10 +38,10 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
         idle = false;
         digitalWrite(addr_EN, LOW); // Enable addr selection
 
-        digitalWrite(CS_addr[0], (addr & 0b00000001) ? HIGH : LOW);
-        digitalWrite(CS_addr[1], (addr & 0b00000010) ? HIGH : LOW);
-        digitalWrite(CS_addr[2], (addr & 0b00000100) ? HIGH : LOW);
-        digitalWrite(CS_addr[3], (addr & 0b00001000) ? HIGH : LOW);
+        digitalWrite(CS_addr[0], (addr & 0x01) ? HIGH : LOW);
+        digitalWrite(CS_addr[1], (addr & 0x02) ? HIGH : LOW);
+        digitalWrite(CS_addr[2], (addr & 0x04) ? HIGH : LOW);
+        digitalWrite(CS_addr[3], (addr & 0x08) ? HIGH : LOW);
 
         digitalWrite(addr_EN, HIGH); // Latch addr
 
