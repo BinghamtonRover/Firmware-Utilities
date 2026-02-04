@@ -41,11 +41,11 @@ class BurtSPI {
         bool prepareTransaction(uint8_t addr);
 
         /**
-         * @note Prefer that external component libraries call `disableOutput()` and
-         * `enableOutput()` indirectly by using `goToIdle()` and the prepare/transfer
-         * workflow. Directly calling `enableOutput()`/`disableOutput()` is provided
-         * for flexibility, but is NOT recommended unless you have verified that the
-         * external library does NOT also assert its own CS line directly (e.g.
+         * @note Prefer that external component libraries do not call `disableOutput()` 
+         * and `enableOutput()` directly. Using `goToIdle()` and the prepare/transfer
+         * workflow is safer. Directly calling `enableOutput()`/`disableOutput()` is 
+         * provided for flexibility, but is NOT recommended unless you have verified 
+         * that the external library does NOT also assert its own CS line directly (e.g.
          * `digitalWrite(CS, LOW)`). If external libs still use their own CS writes,
          * using `enableOutput()` can create races and unexpected device selects.
          */
