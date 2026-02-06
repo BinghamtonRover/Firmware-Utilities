@@ -1,11 +1,7 @@
-#ifndef CURRENT_SENSOR_H
-#define CURRENT_SENSOR_H
-
 #include <Arduino.h>
 
 class CurrentSensor {
 public:
-  // Constructor
   CurrentSensor(uint8_t adcPin);
 
   // Call once in setup()
@@ -34,7 +30,6 @@ private:
   float _s_hat;
   float _x;
 
-  // Internal helpers
   float adcToCurrent(int raw);
 };
 

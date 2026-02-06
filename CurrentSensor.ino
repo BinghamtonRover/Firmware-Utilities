@@ -3,7 +3,6 @@
 
 CurrentSensor currentSensor(23);
 
-// ISR — keep it FAST
 void sampleISR() {
   currentSensor.updateFromISR(analogRead(23));
 }

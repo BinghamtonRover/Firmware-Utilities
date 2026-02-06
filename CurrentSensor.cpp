@@ -1,16 +1,12 @@
 #include "CurrentSensor.h"
 #include <math.h>
 
-// ================== Constants ==================
-
 static const float DB = 0.5f;          // Deadband (A)
 static const float u90 = 0.5f;
 static const float K = 1.4722f / u90;
 
 static const float alpha_min = 0.5f;
 static const float alpha_max = 0.5f;
-
-// ================== Constructor ==================
 
 CurrentSensor::CurrentSensor(uint8_t adcPin)
   : _adcPin(adcPin),
@@ -20,7 +16,6 @@ CurrentSensor::CurrentSensor(uint8_t adcPin)
     _s_hat(0.0f),
     _x(0.0f) {}
 
-// ================== Public API ==================
 
 void CurrentSensor::begin() {
   pinMode(_adcPin, INPUT);
