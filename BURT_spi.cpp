@@ -43,8 +43,6 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
     addr &= 0x0F;
     if (!idle) return false;
     else {
-        idle = false;
-
         // Pulse the addr_EN low to allow changing the address (addr_EN is active LOW)
         digitalWrite(addr_EN, LOW); // Enable addr selection (active LOW)
 
@@ -58,7 +56,7 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
 
         // Small settle time to allow decoder outputs to become valid
         if (delay_us) delayMicroseconds(delay_us);
-
+        idle = false;
         return true;
     }   
 }
