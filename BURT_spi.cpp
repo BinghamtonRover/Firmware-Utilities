@@ -14,7 +14,7 @@ BurtSPI::BurtSPI(const uint8_t (&csAddrPins)[4],
 
 void BurtSPI::setupSPI() {
     pinMode(addressEnable, OUTPUT);
-    pinMode(outEnable, OUTPUT);
+    pinMode(outEnable,     OUTPUT);
 
     // EN signals are ACTIVE LOW; deassert them (HIGH) at init
     digitalWrite(addressEnable, HIGH);
@@ -34,15 +34,15 @@ void BurtSPI::setupSPI() {
 }
 
 bool BurtSPI::prepareTransaction(uint8_t addr) {
+    if (addr >= 16) { return false; }
+  
     // Keep outputs disabled until caller explicitly enables them (active LOW)
     digitalWrite(outEnable, HIGH);
 
     addr &= 0x0F;
 
     if (!idle) return false;
-
-    idle = false;
-
+  
     // Pulse the addressEnable low to allow changing the address (addressEnable is active LOW)
     digitalWrite(addressEnable, LOW); // Enable addr selection (active LOW)
 
@@ -55,10 +55,8 @@ bool BurtSPI::prepareTransaction(uint8_t addr) {
     digitalWrite(addressEnable, HIGH); // Latch addr
 
     // Small settle time to allow decoder outputs to become valid
-    if (delayUs > 0) {
-        delayMicroseconds(delayUs);
-    }
-
+    if (delayUs) delayMicroseconds(delayUs);
+    idle = false;
     return true;
 }
 
@@ -74,8 +72,7 @@ void BurtSPI::disableOutput() {
 void BurtSPI::goToIdle() {
     // Ensure outputs are disabled (active LOW)
     disableOutput();
-    if (delayUs > 0) {
-        delayMicroseconds(delayUs);
-    }
+    if (delayUs) delayMicroseconds(delayUs);
     idle = true;
 }
+
