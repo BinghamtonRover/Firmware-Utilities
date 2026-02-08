@@ -24,6 +24,7 @@ using Can3 = FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16>;
 // See https://en.wikipedia.org/wiki/CAN_bus#Data_transmission for details.
 using CanMessage = CAN_message_t;
 
+using CanHandler = void(*)(const CanMessage& message);
 
 /// A service to send and receive messages via the CAN bus protocol.
 ///
@@ -56,7 +57,7 @@ class BurtCan {
 		uint32_t idEnd;
 
 		/// A user-provided callback to run when a message is received.
-		ProtoHandler onMessage;
+		CanHandler onMessage;
 
 		bool useExtendedIds;
 
@@ -65,10 +66,10 @@ class BurtCan {
 
 	public:
 		/// A CAN mailbox that listens to messages with one CAN ID.
-		BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds = false);
+		BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds = false);
 
 		/// A CAN mailbox that listens to messages with a range of CAN IDs.
-		BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessage, bool useExtendedIds = false);
+		BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds = false);
 
 		/// Initializes the CAN hardware to handle messages with the given ID(s).
 		///
@@ -81,7 +82,7 @@ class BurtCan {
 		void update();
 
 		/// Sends a byte array over the CAN bus with the given ID.
-		void sendRaw(uint32_t id, uint8_t data[8], int length);
+		bool sendRaw(uint32_t id, uint8_t data[8], int length);
 
 		/// Encodes the given message and fields then sends it using #sendRaw.
 		bool send(uint32_t id, const void* message, const pb_msgdesc_t* fields);

@@ -7,7 +7,7 @@ static int standardMailbox = MB0;
 static int extendedMailbox = MB4;
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedIds) :
+BurtCan<CanType>::BurtCan(uint32_t id, CanHandler onMessage, bool useExtendedIds) :
 	idStart(id),
 	idEnd(0),
 	onMessage(onMessage),
@@ -15,7 +15,7 @@ BurtCan<CanType>::BurtCan(uint32_t id, ProtoHandler onMessage, bool useExtendedI
 	{ }
 
 template <class CanType>
-BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessage, bool useExtendedIds) :
+BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, CanHandler onMessage, bool useExtendedIds) :
 	idStart(idStart),
 	idEnd(idEnd),
 	onMessage(onMessage),
@@ -24,7 +24,7 @@ BurtCan<CanType>::BurtCan(uint32_t idStart, uint32_t idEnd, ProtoHandler onMessa
 
 template <class CanType>
 void BurtCan<CanType>::handleCanFrame(const CanMessage& message) {
-	onMessage(message.buf, message.len);
+	onMessage(message);
 }
 
 template <class CanType>
@@ -55,21 +55,14 @@ void BurtCan<CanType>::update() {
 		int success = can.read(message);  // 0=no message, 1=message read
 		if (success == 0) return;
 		count++;
-		if (count == 10) {
-			Serial.println("[BurtCan] Warning: More than 10 messages are being read in loop().");
-			Serial.println("[BurtCan] Warning:   Consider calling can.update() more often, reduce the");
-			Serial.println("[BurtCan] Warning:   amount of messages on the CAN bus, or consider increasing");
-			Serial.println("[BurtCan] Warning:   this limit. Your messages are still being processed.");
-		}
-		onMessage(message.buf, message.len);
+		onMessage(message);
 	}
 }
 
 template <class CanType>
-void BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
+bool BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	if (length > 8) {
-		Serial.println("Message is too long");
-		return;
+		return false;
 	}
 	// Initializes a CAN frame with the given data and sends it.
 	CanMessage frame = {};
@@ -79,6 +72,8 @@ void BurtCan<CanType>::sendRaw(uint32_t id, uint8_t data[8], int length) {
 	memset(frame.buf, 0, 8);
 	memcpy(frame.buf, data, length);
 	can.write(frame);
+
+	return true;
 }
 
 template <class CanType>
@@ -87,10 +82,8 @@ bool BurtCan<CanType>::send(uint32_t id, const void* message, const pb_msgdesc_t
 	uint8_t data[8];
 	int length = BurtProto::encode(data, fields, message, 8);
 	if (length == -1) {
-		Serial.println("[BurtCan] Error: Failed to encode message");
 		return false;
 	} else if (length > 8) {
-		Serial.println("[BurtCan] Error: Encoded message is too long");
 		return false;
 	}
 
@@ -100,6 +93,7 @@ bool BurtCan<CanType>::send(uint32_t id, const void* message, const pb_msgdesc_t
 
 template <class CanType>
 void BurtCan<CanType>::showDebugInfo() {
+	// Mailbox Status prints to Serial
 	Serial.println("[BurtCan] Debug: Showing debug info...");
 	can.mailboxStatus();
 }
