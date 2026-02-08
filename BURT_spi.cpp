@@ -36,6 +36,7 @@ void BurtSPI::setupSPI() {
 }
 
 bool BurtSPI::prepareTransaction(uint8_t addr) {
+    if (addr >= 16) { return false; }
     // Keep outputs disabled until caller explicitly enables them (active LOW)
     digitalWrite(out_EN, HIGH);
 
