@@ -7,8 +7,6 @@ name: Document with Doxygen
 on: 
   push:
     branches: [ main ]
-  pull_request:
-    branches: ["main"]
 
 jobs:
   documentation:
