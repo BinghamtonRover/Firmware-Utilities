@@ -22,10 +22,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git branch --all
           git switch --track origin/documentation
-          git merge origin/main
-          rm -rf docs
-          git stage docs
-          git commit -m "Removed documentation" -m "Will generate new docs"
+          git reset --hard origin/main
 
       - name: Run Doxygen
         uses: mattnotmitt/doxygen-action@1.9.4
@@ -35,4 +32,4 @@ jobs:
           git status
           git stage --force .
           git commit -a -m "Generated documentation"
-          git push
+          git push --force
