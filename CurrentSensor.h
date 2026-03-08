@@ -32,6 +32,7 @@ public:
 private:
   uint8_t pin;
   float s;
+  unsigned long p_micros;
 
   const float DB = 0.5f; // Amps
   const float u90 = 0.5f;
