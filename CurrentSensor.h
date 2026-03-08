@@ -1,36 +1,50 @@
+#pragma once
+
 #include <Arduino.h>
+#include <math.h>
+#include <stdint.h>
 
 class CurrentSensor {
 public:
-  CurrentSensor(uint8_t adcPin);
+  /**
+   * @brief Construct a new CurrentSensor object
+   * 
+   * @param pin Pin number (must be analog)
+   */
+  CurrentSensor(uint8_t pin);
 
-  // Call once in setup()
-  void begin();
+  /**
+   * @brief Sets up CurrentSensor on pin; initialized first reading
+   * 
+   * @note All analogRead() calls will be averaged if setup() is called
+   */
+  void setup();
 
-  // Called from ISR
-  void updateFromISR(int adcValue);
-
-  // Called from loop()
-  bool hasNewSample();
-  void process();
-
-  float getRawCurrent() const;
-  float getFilteredCurrent() const;
+  /**
+   * @brief Get a filtered current reading
+   * 
+   * @return float 
+   */
+  float getCurrent() const;
 
 private:
-  // Hardware
-  uint8_t _adcPin;
+  uint8_t pin;
 
-  // ISR-shared data
-  volatile int _adcRaw;
-  volatile bool _newSample;
+  const float DB = 0.5f; // Amps
+  const float u90 = 0.5f;
+  const float K = 1.4722f / u90;
+  const float a_min = 0.03f;
+  const float a_max = 0.5f;
 
-  // Filter state
-  bool _inited;
-  float _s_hat;
-  float _x;
+  bool inited;
+  float s;
 
-  float adcToCurrent(int raw);
+  /**
+   * @brief Helper function to convert raw adc reading into current value (amps)
+   * 
+   * @param raw ADC reading
+   * @note The values are currently based on the ACS711 10A current sensor; the values will be different for different current sensors
+   * @return float 
+   */
+  float adcToAmps(unsigned raw);
 };
-
-#endif
