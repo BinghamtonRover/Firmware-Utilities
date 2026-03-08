@@ -2,25 +2,27 @@
 
 CurrentSensor::CurrentSensor(uint8_t pin)
   : pin(pin),
-    s(-67676767f),  // to detect setup error
+    s(-67676767.67f)  // to detect setup error (deadass)
     {}
 
 void CurrentSensor::setup() {
   pinMode(pin, INPUT);
-  analogReadAveraging(4); // will force all analogReads to be averaged
-  s = analogRead(pin);
+  analogReadAveraging(4); // will force all analogReads in the loop to be averaged, not just for this CurrentSensor class
+  s = adcToAmps(analogRead(pin));
 }
 
+// TODO: Add a period (using millis() not a timer)
+// TODO: Figure out why tf the header complains that getCurrent() isn't defined
 float getCurrent() {
   // Adaptive alpha calculation
-  float x = analogRead(pin);
+  float x = adcToAmps(analogRead(pin));
   float delta = fabsf(x - s);
   delta = (delta < DB) ? 0 : delta - DB;
   float openness = tanh(K * delta);
   float a = a_min + (a_max - a_min) * openness;
 
   // Update s
-  s = (1 - a)*s + a*s;
+  s = (1.0f - a)*s + a*x;
   s = s + a*(x - s);
 }
 

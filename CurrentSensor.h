@@ -9,6 +9,8 @@ public:
   /**
    * @brief Construct a new CurrentSensor object
    * 
+   * s is initialized to an impossible value to detect errors with setup (i.e. if we see this impossible value on the output, 
+   * we know s isn't getting updated/initialized)
    * @param pin Pin number (must be analog)
    */
   CurrentSensor(uint8_t pin);
@@ -25,19 +27,17 @@ public:
    * 
    * @return float 
    */
-  float getCurrent() const;
+  float getCurrent();
 
 private:
   uint8_t pin;
+  float s;
 
   const float DB = 0.5f; // Amps
   const float u90 = 0.5f;
   const float K = 1.4722f / u90;
   const float a_min = 0.03f;
   const float a_max = 0.5f;
-
-  bool inited;
-  float s;
 
   /**
    * @brief Helper function to convert raw adc reading into current value (amps)
