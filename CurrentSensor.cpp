@@ -10,7 +10,6 @@ void CurrentSensor::setup() {
   pinMode(pin, INPUT);
   analogReadAveraging(4); // will force all analogReads in the loop to be averaged, not just for this CurrentSensor class
   s = adcToAmps(analogRead(pin));
-
 }
 
 float CurrentSensor::getCurrent() {
