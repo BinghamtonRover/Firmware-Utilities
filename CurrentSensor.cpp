@@ -14,8 +14,9 @@ void CurrentSensor::setup() {
 
 float CurrentSensor::getCurrent() {
   if ( micros() - p_micros > 1000 ) { // 1KHz sampling period
+    p_micros = micros();
     // Adaptive alpha calculation
-    float x = adcToAmps(analogRead(pin));
+    float x = offset + adcToAmps(analogRead(pin));
     float delta = fabsf(x - s);
     delta = (delta < DB) ? 0 : delta - DB;
     float openness = tanh(K * delta);

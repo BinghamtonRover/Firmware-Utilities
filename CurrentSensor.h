@@ -37,9 +37,9 @@ private:
   const float DB = 0.8f; // Amps
   const float u90 = 0.5f;
   const float K = 1.4722f / u90;
-  const float a_min = 0.001f;
+  const float a_min = 0.025f;
   const float a_max = 0.9f;
-  // const float offset = 0.02f; // offset, some current sensors are a little offset (this doesn't work rn)
+  const float offset = 0.03f; // offset, some current sensors are a little offset (this doesn't work rn)
 
   /**
    * @brief Helper function to convert raw adc reading into current value (amps)
