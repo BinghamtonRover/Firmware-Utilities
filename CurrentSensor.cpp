@@ -23,7 +23,6 @@ float CurrentSensor::getCurrent() {
 
     // Update s
     s = (1.0f - a)*s + a*x;
-    s = s + a*(x - s);
   }
   return s;
 }
